@@ -192,7 +192,7 @@
 (define breaker (char->integer #\-))
 
 
-(define request
+#;(define request
   (list (cons 'headers headers)
         (cons 'parameters parameters)
         (cons 'cookies cookies)
@@ -222,8 +222,6 @@
     (close-port input)
     (close-port output)))
 
-(define (cgi) request)
-
 (define cgi-exit
   (lambda args
     (for-each (lambda (file)
@@ -235,82 +233,89 @@
       (exit 0)
       (exit (car args)))))
 
-(cond ((and content-type-pair (string=? content-type "multipart/form-data"))
-       (letrec* ((boundary (string->utf8 (string-append (list-ref (string-split
-                                                                    (list-ref content-type-data 1) #\=) 1))))
-                 (boundary-length (bytevector-length boundary))
-                 (content (letrec ((looper (lambda (bytes result)
-                                             (if (eof-object? bytes)
-                                               result
-                                               (looper (read-bytevector buffer-size stdin)
-                                                       (bytevector-append result bytes))))))
-                            (looper (read-bytevector buffer-size stdin)
-                                    (bytevector))))
-                 (header-content-length (string->number (cdr (assoc 'CONTENT_LENGTH headers))))
-                 (content-length (bytevector-length content))
-                 (content-mark 0)
-                 (looper (lambda (index)
-                           (cond ((< index (- content-length 4))
-                                  (if (and (= breaker (bytevector-u8-ref content index))
-                                           (= breaker (bytevector-u8-ref content (+ index 1)))
-                                           (equal? boundary (bytevector-copy content (+ index 2) (+ index 2 boundary-length))))
-                                    (let* ((part (bytevector-copy content content-mark index))
-                                           (part-length (bytevector-length part))
-                                           (part-port (open-input-bytevector part))
-                                           (part-headers-length 0)
-                                           (part-headers (letrec ((loop (lambda (line result)
-                                                                          (if (or (eof-object? line) (string=? line ""))
-                                                                            (map (lambda (p) (string-split p #\:)) result)
-                                                                            (begin
-                                                                              (set! part-headers-length (+ part-headers-length
-                                                                                                           (string-length line)
-                                                                                                           2))
-                                                                              (loop (read-bytevector-line part-port)
-                                                                                    (append result (list line))))))))
-                                                           (loop (read-bytevector-line part-port) (list)))))
-                                      (if (and (not (null? part-headers))
-                                               (assoc "Content-Disposition" part-headers))
-                                        (let* ((content-disposition
-                                                 (map
-                                                   (lambda (str)
-                                                     (let ((split (string-split str #\=)))
-                                                       (cons (string-filter (list-ref split 0) (lambda (c) (not (char=? c #\space))))
-                                                             (if (= (length split) 2)
-                                                               (string-filter (list-ref split 1) (lambda (c) (not (char=? c #\"))))
-                                                               ""))))
-                                                   (string-split (car (cdr (assoc "Content-Disposition" part-headers))) #\;)))
-                                               (filename (assoc "filename" content-disposition)))
-                                          (if (not filename)
-                                            (set! parameters
-                                              (append parameters
-                                                      (list
-                                                        (cons (cdr (assoc "name" content-disposition))
-                                                              (utf8->string (bytevector-copy content
-                                                                                             (+ (+ content-mark part-headers-length) 2)
-                                                                                             (- index 2)))))))
-                                            (let* ((tmp-file-path (string-append temporary-directory
-                                                                                 "/"
-                                                                                 (make-temp-filename (cdr filename))))
-                                                   (tmp-file-port (begin (when (file-exists? tmp-file-path)
-                                                                           (delete-file tmp-file-path))
-                                                                         (open-binary-output-file tmp-file-path))))
-                                              (write-bytevector (bytevector-copy content
-                                                                                 (+ (+ content-mark part-headers-length) 2)
-                                                                                 (- index 2))
-                                                                tmp-file-port)
-                                              (close-port tmp-file-port)
-                                              (set! files (append files (list
-                                                                          (cons (cdr (assoc "name" content-disposition))
-                                                                                tmp-file-path))))))
-                                          (set! content-mark index)))
-                                      (looper (+ index boundary-length)))
-                                    (looper (+ index 1))))))))
-         (looper 0)))
-      (else (let ((raw-body (if (string=? request-method "POST")
-                              (read-until-eof stdin (bytevector))
-                              "")))
-              (set! parameters (split-http-parameters (if (string=? request-method "POST")
-                                                        raw-body
-                                                        query-string)))
-              (when (string=? request-method "POST")
-                (set! body raw-body)))))
+(define (cgi)
+  (cond ((and content-type-pair (string=? content-type "multipart/form-data"))
+         (letrec* ((boundary (string->utf8 (string-append (list-ref (string-split
+                                                                      (list-ref content-type-data 1) #\=) 1))))
+                   (boundary-length (bytevector-length boundary))
+                   (content (letrec ((looper (lambda (bytes result)
+                                               (if (eof-object? bytes)
+                                                 result
+                                                 (looper (read-bytevector buffer-size stdin)
+                                                         (bytevector-append result bytes))))))
+                              (looper (read-bytevector buffer-size stdin)
+                                      (bytevector))))
+                   (header-content-length (string->number (cdr (assoc 'CONTENT_LENGTH headers))))
+                   (content-length (bytevector-length content))
+                   (content-mark 0)
+                   (looper (lambda (index)
+                             (cond ((< index (- content-length 4))
+                                    (if (and (= breaker (bytevector-u8-ref content index))
+                                             (= breaker (bytevector-u8-ref content (+ index 1)))
+                                             (equal? boundary (bytevector-copy content (+ index 2) (+ index 2 boundary-length))))
+                                      (let* ((part (bytevector-copy content content-mark index))
+                                             (part-length (bytevector-length part))
+                                             (part-port (open-input-bytevector part))
+                                             (part-headers-length 0)
+                                             (part-headers (letrec ((loop (lambda (line result)
+                                                                            (if (or (eof-object? line) (string=? line ""))
+                                                                              (map (lambda (p) (string-split p #\:)) result)
+                                                                              (begin
+                                                                                (set! part-headers-length (+ part-headers-length
+                                                                                                             (string-length line)
+                                                                                                             2))
+                                                                                (loop (read-bytevector-line part-port)
+                                                                                      (append result (list line))))))))
+                                                             (loop (read-bytevector-line part-port) (list)))))
+                                        (if (and (not (null? part-headers))
+                                                 (assoc "Content-Disposition" part-headers))
+                                          (let* ((content-disposition
+                                                   (map
+                                                     (lambda (str)
+                                                       (let ((split (string-split str #\=)))
+                                                         (cons (string-filter (list-ref split 0) (lambda (c) (not (char=? c #\space))))
+                                                               (if (= (length split) 2)
+                                                                 (string-filter (list-ref split 1) (lambda (c) (not (char=? c #\"))))
+                                                                 ""))))
+                                                     (string-split (car (cdr (assoc "Content-Disposition" part-headers))) #\;)))
+                                                 (filename (assoc "filename" content-disposition)))
+                                            (if (not filename)
+                                              (set! parameters
+                                                (append parameters
+                                                        (list
+                                                          (cons (cdr (assoc "name" content-disposition))
+                                                                (utf8->string (bytevector-copy content
+                                                                                               (+ (+ content-mark part-headers-length) 2)
+                                                                                               (- index 2)))))))
+                                              (let* ((tmp-file-path (string-append temporary-directory
+                                                                                   "/"
+                                                                                   (make-temp-filename (cdr filename))))
+                                                     (tmp-file-port (begin (when (file-exists? tmp-file-path)
+                                                                             (delete-file tmp-file-path))
+                                                                           (open-binary-output-file tmp-file-path))))
+                                                (write-bytevector (bytevector-copy content
+                                                                                   (+ (+ content-mark part-headers-length) 2)
+                                                                                   (- index 2))
+                                                                  tmp-file-port)
+                                                (close-port tmp-file-port)
+                                                (set! files (append files (list
+                                                                            (cons (cdr (assoc "name" content-disposition))
+                                                                                  tmp-file-path))))))
+                                            (set! content-mark index)))
+                                        (looper (+ index boundary-length)))
+                                      (looper (+ index 1))))))))
+           (looper 0)))
+        (else (let ((raw-body (if (string=? request-method "POST")
+                                (read-until-eof stdin (bytevector))
+                                "")))
+                (set! parameters (split-http-parameters (if (string=? request-method "POST")
+                                                          raw-body
+                                                          query-string)))
+                (when (string=? request-method "POST")
+                  (set! body raw-body)))))
+
+  (list (cons 'headers headers)
+        (cons 'parameters parameters)
+        (cons 'cookies cookies)
+        (cons 'body body)
+        (cons 'files files)))

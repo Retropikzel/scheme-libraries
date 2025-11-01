@@ -1,0 +1,137 @@
+<pre>R7RS Scheme library for Common Gateway Interface
+
+If you dont know what CGI is, in short server runs your Scheme script and
+displays it's output as a webpage. Also checkout
+[https://git.sr.ht/~retropikzel/scheme-php](https://git.sr.ht/~retropikzel/scheme-php).
+
+[Project](https://sr.ht/~retropikzel/scheme-cgi/)
+
+[Repository](https://git.sr.ht/~retropikzel/scheme-cgi)
+
+[Issue tracker](https://todo.sr.ht/~retropikzel/scheme-cgi)
+
+## Caveats
+
+- Works only on unix as it reads from /dev/fd/0 and /dev/random.
+
+## Buggy on implementations
+
+- Does not work with mit-scheme
+    - For some reason mit-scheme exits when it reads eof-object from standard
+    input
+- STklos
+    - No output for some reason
+
+## How to use
+
+Example using Gauche in Docker.
+
+lighttpd.conf:
+
+    server.document-root = "/workdir"
+    server.port = 3000
+    server.modules += ("mod_cgi", "mod_dirlisting")
+    cgi.assign = (".scm"  => "/usr/bin/scheme-script")
+    dir-listing.activate = "enable"
+
+Dockerfile:
+
+    FROM schemers/gauche
+    RUN apt-get update && apt-get install -y --no-install-recommends lighttpd
+    WORKDIR /workdir
+    EXPOSE 3000
+    COPY lighttpd.conf /lighttpd.conf
+    RUN echo "#!/bin/sh" > /usr/bin/scheme-script
+    RUN echo "exec gosh -r7 -I ./snow \$@" >> /usr/bin/scheme-script
+    RUN chmod +x /usr/bin/scheme-script
+    ENTRYPOINT ["/usr/sbin/lighttpd", "-D", "-f", "/lighttpd.conf"]
+
+hello.scm:
+
+    (import (scheme base)
+            (scheme write)
+            (retropikzel cgi))
+
+    (display "Content-type: text/html")
+    (display "
+")
+    (display "
+")
+    (display "Hello")
+    (display "</br>")
+
+    (display "Request: ")
+    (write (get-request))
+    (display "</br>")
+    (cgi-exit)
+
+Run:
+
+    docker build . --tag=scheme-cgi
+    docker run -it -v ${PWD}:/workdir -p 3000:3000 scheme-cgi
+
+Then navigate with your browser to http://127.0.0.1:3000
+
+## Documentation
+
+### Reference
+
+**get-request**
+
+Returns the whole request as association list.
+
+**get-header** _name_
+
+Name can be symbol or a string. Returns the value of given header or #f.
+
+**get-headers**
+
+Returns association list of all headers.
+
+**get-parameter** _name_
+
+Name can be symbol or a string. Returns the value of given parameter or #f.
+
+**get-parameters**
+
+Returns association list of all parameters.
+
+**get-cookie** _name_
+
+Returns the value of given cookie or #f if.
+
+**get-cookies**
+
+Returns association list of all cookies.
+
+**get-file** _filename_
+
+Filename is a symbol or a string. Returns the path of given file from files or #f.
+
+Uploaded files are stored in /tmp, with randomly generated prefix on their
+name. They are not deleted unless cgi-exit is called. Use **move-file** to move
+them into preferred location.
+
+**get-files**
+
+Returns association list of all files.
+
+**move-file** _from_ _to_
+
+Moves a file from _from_ path to _to_ path.
+
+**get-body**
+
+Returns the request body.
+
+**cgi-exit**</br>
+**cgi-exit** _code_
+
+Does necessary cleanup and exits the script. Code is a number, if it is given
+then that is used as exit code.
+
+### Environment variables
+
+**SCHEME\_CGI\_TMP\_PATH**
+
+Path to where uploaded files are stored. Default is /tmp.</pre>

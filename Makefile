@@ -1,7 +1,7 @@
 .SILENT: build install test test-docker clean ${TMPDIR}
 SCHEME=chibi
 LIBRARY=cgi
-AUTHOR=Retropikzel
+AUTHOR=retropikzel
 
 LIBRARY_FILE=retropikzel/${LIBRARY}.sld
 VERSION=$(shell cat retropikzel/${LIBRARY}/VERSION)
