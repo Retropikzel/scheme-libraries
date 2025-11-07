@@ -10,7 +10,7 @@ README=retropikzel/${LIBRARY}/README.html
 TESTFILE=retropikzel/${LIBRARY}/test.scm
 
 PKG=${AUTHOR}-${LIBRARY}-${VERSION}.tgz
-TMPDIR=tmp/${SCHEME}
+TMPDIR=.tmp/${SCHEME}
 
 DOCKERIMG=${SCHEME}:head
 ifeq "${SCHEME}" "chicken"
@@ -47,10 +47,4 @@ test-docker: ${TMPDIR}
 		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes build install test; chmod -R 755 ${TMPDIR}"
 
 clean:
-	find . -name "README.html" -delete
-	find . -name "*.log" -delete
-	rm -rf ${TMPDIR}
-	rm -rf *.tgz
-
-clean-all:
-	rm -rf tmp
+	git clean -X -f
