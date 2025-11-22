@@ -1,4 +1,4 @@
-.SILENT: build install test test-docker clean ${TMPDIR}
+#.SILENT: build install test test-docker clean ${TMPDIR}
 SCHEME=chibi
 LIBRARY=cgi
 AUTHOR=retropikzel
