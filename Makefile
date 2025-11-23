@@ -1,4 +1,8 @@
-#.SILENT: build install test test-docker clean ${TMPDIR}
+TMPDIR=.tmp/${SCHEME}
+
+.SILENT: build install test test-docker clean ${TMPDIR}
+.PHONY: ${TMPDIR}
+
 SCHEME=chibi
 LIBRARY=cgi
 AUTHOR=retropikzel
@@ -10,7 +14,6 @@ README=retropikzel/${LIBRARY}/README.html
 TESTFILE=retropikzel/${LIBRARY}/test.scm
 
 PKG=${AUTHOR}-${LIBRARY}-${VERSION}.tgz
-TMPDIR=.tmp/${SCHEME}
 
 DOCKERIMG=${SCHEME}:head
 ifeq "${SCHEME}" "chicken"
@@ -30,21 +33,21 @@ uninstall:
 	-snow-chibi remove --impls=${SCHEME} ${PKG}
 
 ${TMPDIR}:
-	@mkdir -p ${TMPDIR}
-	@cp ${TESTFILE} ${TMPDIR}/
-	@mkdir -p ${TMPDIR}/retropikzel
-	@cp -r retropikzel/${LIBRARY} ${TMPDIR}/retropikzel/
-	@cp -r retropikzel/${LIBRARY}.s* ${TMPDIR}/retropikzel/
+	mkdir -p ${TMPDIR}
+	cp ${TESTFILE} ${TMPDIR}/
+	mkdir -p ${TMPDIR}/retropikzel
+	cp -r retropikzel/${LIBRARY} ${TMPDIR}/retropikzel/
+	cp -r retropikzel/${LIBRARY}.s* ${TMPDIR}/retropikzel/
 
-test: ${TMPDIR}
+test-r7rs: ${TMPDIR}
 	echo "Hello"
-	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} compile-r7rs -I . -o test test.scm
-	cd ${TMPDIR} && ./test
+	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} compile-scheme -I . -o test-r7rs test.scm
+	cd ${TMPDIR} && ./test-r7rs
 
-test-docker: ${TMPDIR}
+test-r7rs-docker: ${TMPDIR}
 	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=scheme-library-test-${SCHEME} -f Dockerfile.test . 2> ${TMPDIR}/docker.log || cat ${TMPDIR}/docker.log
 	docker run -v "${PWD}:/workdir" -w /workdir -t scheme-library-test-${SCHEME} \
-		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes build install test; chmod -R 755 ${TMPDIR}"
+		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes build install test-r7rs; chmod -R 755 ${TMPDIR}"
 
 clean:
 	git clean -X -f
