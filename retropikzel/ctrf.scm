@@ -4,23 +4,28 @@
     (display any)
     (get-output-string (current-output-port))))
 
-(define runner
+(define ctrf-runner
   (lambda ()
     (let ((runner (test-runner-null))
-          (tests (list))
+          (tests (vector))
           (current-test-start-time 0)
-          (current-test-groups '()))
+          (current-test-groups (vector)))
 
       (test-runner-on-group-begin!
         runner
         (lambda (runner suite-name count)
-          (set! current-test-groups (append current-test-groups (list suite-name)))))
+          (set! current-test-groups
+            (vector-append current-test-groups (vector suite-name)))))
 
       (test-runner-on-group-end!
         runner
         (lambda (runner)
           (set! current-test-groups
-            (reverse (list-tail (reverse current-test-groups) 1)))))
+            (list->vector
+              (reverse
+                (list-tail
+                  (reverse (vector->list current-test-groups))
+                  1))))))
 
       (test-runner-on-test-begin!
         runner
@@ -66,12 +71,13 @@
                                'source-form
                                (any->string (test-result-ref runner 'source-form))))
 
-            (let ((test (alist->hash-table
+            (let ((test ;(alist->hash-table
                           `((name . ,name)
                             (status . ,status)
                             (duration . ,duration)
                             (suite . ,current-test-groups)
-                            (extra . ,extra)))))
+                            ;(extra . ,extra)
+                            )));)
 
               (when (test-result-ref runner 'source-file)
                 (hash-table-set! extra
@@ -83,7 +89,7 @@
                                  'line
                                  (test-result-ref runner 'source-line)))
 
-              (set! tests (append tests (list test)))))))
+              (set! tests (vector-append tests (vector test)))))))
 
       (test-runner-on-final!
         runner
@@ -94,32 +100,25 @@
              (fail (test-runner-fail-count runner))
              (xfail (test-runner-xfail-count runner))
              (skipped (test-runner-skip-count runner))
-             (tool (alist->hash-table
-                     `((name . "srfi-64-retropikzel-ctrf"))))
-             (summary (alist->hash-table
-                        `((tests . ,(+ pass xpass fail xfail))
-                          (passed . ,(+ pass xpass))
-                          (failed . ,(+ fail xfail))
-                          (pending . 0)
-                          (skipped . ,skipped)
-                          (other . 0))))
-             (results (alist->hash-table
-                        `((tool . ,tool)
-                          (summary . ,summary)
-                          (tests . ,tests))))
-             (env (alist->hash-table
-                    `((appName . ,implementation-name)
-                      (osPlatform . ,operation-system))))
-             (output (alist->hash-table
-                       `((reportFormat . "CTRF")
-                         (specVersion . "0.0.0")
-                         (results . ,results)
-                         (generatedBy . "(retropikzel ctrf)")
-                         (environment . ,env)))))
+             (tool `((name . "srfi-64-retropikzel-ctrf")))
+             (summary `((tests . ,(+ pass xpass fail xfail))
+                        (passed . ,(+ pass xpass))
+                        (failed . ,(+ fail xfail))
+                        (pending . 0)
+                        (skipped . ,skipped)
+                        (other . 0)))
+             (results `((tool . ,tool)
+                        (summary . ,summary)
+                        (tests . ,tests)))
+             (env `((appName . ,implementation-name)
+                    (osPlatform . ,operation-system)))
+             (output `((reportFormat . "CTRF")
+                       (specVersion . "0.0.0")
+                       (results . ,results)
+                       (generatedBy . "(retropikzel ctrf)")
+                       (environment . ,env))))
 
-            (display (json-write '((a . 1))))
+            (json-write output (current-output-port))
             (newline)
             (exit (+ fail xfail)))))
       runner)))
-
-(test-runner-factory runner)

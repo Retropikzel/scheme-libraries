@@ -1,10 +1,20 @@
-Uses SRFI-64 underneath, giving output as [Common Test Report Format](https://ctrf.io/).
-
-Features
-
-- Exports exactly same things as SRFI-64, it only alters the output
-- Exists with exit code of count of failed tests
-- Measures time spent running individual tests
-- Adds implementation name and operation system onto the report
+Test-runner for SRFI-64 that outputs
+[Common Test Report Format](https://ctrf.io/).
 
 
+Usage:
+
+
+    (import (scheme base)
+            (srfi 64)
+            (retropikzel ctrf))
+
+    (test-runner-current (ctrf-runner))
+
+
+Then run tests as usual. The CTRF output will be outputted into JSON file
+named as $SCHEME-$TESTNAME.json.
+
+Any failing tests and summary will be printed into stdout.
+
+Exit code is the amount of failed tests.
