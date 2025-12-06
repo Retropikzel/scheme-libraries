@@ -1,9 +1,3 @@
-(import (scheme base)
-        (scheme write)
-        (scheme file)
-        (scheme process-context)
-        (srfi 64)
-        (retropikzel ctrf))
 
 (test-runner-current (ctrf-runner))
 

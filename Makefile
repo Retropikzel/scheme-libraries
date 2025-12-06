@@ -1,6 +1,7 @@
 TMPDIR=.tmp/${SCHEME}
 
-.SILENT: build install test-r7rs test-r7rs-docker clean ${TMPDIR}
+.SILENT: build install test-r6rs test-r6rs-docker test-r7rs test-r7rs-docker \
+	clean ${TMPDIR}
 .PHONY: ${TMPDIR}
 
 SCHEME=chibi
@@ -34,19 +35,30 @@ uninstall:
 
 ${TMPDIR}:
 	mkdir -p ${TMPDIR}
-	cp ${TESTFILE} ${TMPDIR}/
 	mkdir -p ${TMPDIR}/retropikzel
 	cp -r retropikzel/${LIBRARY} ${TMPDIR}/retropikzel/
 	cp -r retropikzel/${LIBRARY}.s* ${TMPDIR}/retropikzel/
 
+test-r6rs: ${TMPDIR}
+	cd ${TMPDIR} && printf "#!r6rs\n(import (rnrs base) (rnrs control) (rnrs io simple) (rnrs files) (rnrs programs) (srfi :64) (retropikzel ${LIBRARY}))\n" > test-r6rs.sps
+	cat ${TESTFILE} >> ${TMPDIR}/test-r6rs.sps
+	cd ${TMPDIR} && akku install chez-srfi akku-r7rs > /dev/null
+	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} timeout 60 compile-scheme -I .akku/lib -o test-r6rs test-r6rs.sps
+	cd ${TMPDIR} && timeout 60 ./test-r6rs
+
+test-r6rs-docker: ${TMPDIR}
+	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=scheme-library-test-${SCHEME} -f Dockerfile.test --quiet . > /dev/null
+	docker run -v "${PWD}:/workdir" -w /workdir -t scheme-library-test-${SCHEME} \
+		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} build install test-r6rs; chmod -R 755 ${TMPDIR}"
+
 test-r7rs: ${TMPDIR}
-	echo "Hello"
-	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} compile-scheme -I . -o test-r7rs test.scm
-	cd ${TMPDIR} && ./test-r7rs
+	cd ${TMPDIR} && echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (srfi 64) (retropikzel ${LIBRARY}))" > test-r7rs.scm
+	cat ${TESTFILE} >> ${TMPDIR}/test-r7rs.scm
+	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} timeout 60 compile-scheme -I . -o test-r7rs test-r7rs.scm
+	cd ${TMPDIR} && timeout 60 ./test-r7rs
 
 test-r7rs-docker: ${TMPDIR}
-	echo "Building docker image..."
-	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=scheme-library-test-${SCHEME} -f Dockerfile.test --quiet . 2> ${TMPDIR}/docker.log || cat ${TMPDIR}/docker.log
+	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=scheme-library-test-${SCHEME} -f Dockerfile.test --quiet . > /dev/null
 	docker run -v "${PWD}:/workdir" -w /workdir -t scheme-library-test-${SCHEME} \
 		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} build install test-r7rs; chmod -R 755 ${TMPDIR}"
 

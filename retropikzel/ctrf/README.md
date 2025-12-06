@@ -13,8 +13,9 @@ Usage:
 
 
 Then run tests as usual. The CTRF output will be outputted into JSON file
-named as $SCHEME-$TESTNAME.json.
+named as ${SCHEME}-${FIRST\_TEST\_GROUP\_NAME}.ctrf.json.
 
-Any failing tests and summary will be printed into stdout.
+Any failing tests and summary will be printed into stdout as list of JSON
+objects.
 
 Exit code is the amount of failed tests.

@@ -3,27 +3,19 @@
   (import (scheme base)
             (scheme write)
             (scheme time)
+            (scheme file)
             (scheme process-context)
             (srfi 64)
-            (srfi 69)
             (srfi 180))
   (export ctrf-runner)
+  (begin
+    (define operation-system
+      (cond-expand
+        (windows "windows")
+        (linux "linux")
+        (else "other"))))
   (cond-expand
-    ;; Guile has both r6rs and r7rs on (features)
-    (guile
-      (begin (define operation-system
-               (cond-expand
-                 (windows "windows")
-                 (else "unix")))))
-    (r6rs
-      (begin (define operation-system "unknown")))
-    (else
-      (begin (define operation-system
-               (cond-expand
-                 (windows "windows")
-                 (linux "linux")
-                 (else "other"))))))
-  (cond-expand
+    (capyscheme (begin (define implementation-name "capyscheme")))
     (chezscheme (begin (define implementation-name "chezscheme")))
     (chibi (begin (define implementation-name "chibi")))
     (chicken (begin (define implementation-name "chicken")))
@@ -44,10 +36,10 @@
     (else (begin (define implementation-name "unknown"))))
   (cond-expand
     (r6rs
+      (import (srfi :19))
       (begin
         (define (time-ms)
-          ;; FIXME
-          0)))
+          (time-second (current-time)))))
     (else
       (begin
         (define (time-ms) (/ (/ (current-jiffy) (jiffies-per-second)) 1000)))))
