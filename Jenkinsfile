@@ -14,7 +14,7 @@ pipeline {
     }
 
     parameters {
-        string(name: 'LIBRARIES', defaultValue: 'cgi', description: '')
+        string(name: 'LIBRARIES', defaultValue: 'ctrf', description: '')
     }
 
     stages {
