@@ -38,9 +38,9 @@ RUN bash install.sh
 ENV PATH=/root/.local/bin:${PATH}
 RUN akku update
 WORKDIR /workdir
+RUN snow-chibi install --impls=${SCHEME} --always-yes "(srfi 64)"
+RUN snow-chibi install --impls=${SCHEME} --always-yes "(srfi 180)"
 RUN mkdir -p srfi
-RUN for srfi in 39 60 64 145 180; do cp /build/r7rs-srfi/srfi/${srfi}.* srfi/ && cp /build/r7rs-srfi/srfi/srfi-${srfi}.* srfi/; done
-RUN if [ "${SCHEME}" = "chibi" ]; then rm -rf srfi/39.*; fi
 COPY Makefile .
 COPY retropikzel retropikzel/
 
