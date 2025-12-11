@@ -112,5 +112,6 @@
               (lambda ()
                 (json-write output (current-output-port))))
             (json-write failed-tests (current-output-port))
+            (newline)
             (exit (+ fail xfail)))))
       runner)))

@@ -53,7 +53,7 @@ test-r6rs: ${TMPDIR}
 test-r6rs-docker: ${TMPDIR}
 	echo "Building docker image..."
 	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=${DOCKER_TAG} -f Dockerfile.test ${DOCKER_QUIET} . > /dev/null
-	ocker stop $$(docker ps -a -q --filter ancestor=${DOCKE_TAG} --format="{{.ID}}")
+	docker stop $$(docker ps -a -q --filter ancestor=${DOCKER_TAG} --format="{{.ID}}") 2>&1 > /dev/null || true
 	docker run -t ${DOCKER_TAG} sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r6rs"
 
 test-r7rs: ${TMPDIR}
@@ -65,6 +65,7 @@ test-r7rs: ${TMPDIR}
 test-r7rs-docker: ${TMPDIR}
 	echo "Building docker image..."
 	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=${DOCKER_TAG} -f Dockerfile.test ${DOCKER_QUIET} . > /dev/null
+	docker stop $$(docker ps -a -q --filter ancestor=${DOCKER_TAG} --format="{{.ID}}") 2>&1 > /dev/null || true
 	docker run -t ${DOCKER_TAG} sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r7rs"
 
 clean:
