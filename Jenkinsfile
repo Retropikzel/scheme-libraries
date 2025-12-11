@@ -21,7 +21,7 @@ pipeline {
         stage('Tests') {
             steps {
                 script {
-                    def implementations = sh(script: 'compile-r7rs --list-r7rs-schemes', returnStdout: true).split()
+                    def implementations = sh(script: 'compile-scheme --list-r7rs-schemes', returnStdout: true).split()
 
                     params.LIBRARIES.split().each { LIBRARY ->
                         stage("${LIBRARY}") {
