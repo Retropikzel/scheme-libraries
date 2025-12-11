@@ -47,4 +47,5 @@ RUN if [ "${SCHEME}" = "skint" ]; then cp -r /build/r7rs-srfi/srfi/39.* srfi/; f
 RUN if [ "${SCHEME}" = "tr7" ]; then cp -r /build/r7rs-srfi/srfi/39.* srfi/; fi
 COPY Makefile .
 COPY retropikzel retropikzel/
+COPY retropikzel libs/retropikzel/
 
