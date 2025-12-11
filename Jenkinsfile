@@ -28,7 +28,7 @@ pipeline {
                                 [(SCHEME): {
                                     stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                            sh "make SCHEME=${SCHEME} DOCKER_QUIET="" test-r6rs-docker"
+                                            sh "make SCHEME=${SCHEME} DOCKER_QUIET='' test-r6rs-docker"
                                         }
                                     }
                                 }]
@@ -48,7 +48,7 @@ pipeline {
                                 [(SCHEME): {
                                     stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                            sh "make SCHEME=${SCHEME} DOCKER_QUIET="" test-r7rs-docker"
+                                            sh "make SCHEME=${SCHEME} DOCKER_QUIET='' test-r7rs-docker"
                                         }
                                     }
                                 }]
