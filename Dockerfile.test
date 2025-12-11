@@ -41,7 +41,10 @@ WORKDIR /workdir
 RUN snow-chibi install --impls=${SCHEME} --always-yes "(srfi 64)"
 RUN snow-chibi update
 WORKDIR /build/r7rs-srfi
+RUN make SCHEME=${SCHEME} SRFI=60 build install
+RUN make SCHEME=${SCHEME} SRFI=145 build install
 RUN make SCHEME=${SCHEME} SRFI=180 build install
+WORKDIR /workdir
 #RUN snow-chibi install --impls=${SCHEME} --always-yes "(srfi 180)"
 RUN mkdir -p srfi
 COPY Makefile .
