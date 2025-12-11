@@ -20,6 +20,7 @@ DOCKERIMG=${SCHEME}:head
 ifeq "${SCHEME}" "chicken"
 DOCKERIMG="chicken:5"
 endif
+DOCKER_TAG=scheme-library-test-${SCHEME}
 
 DOCKER_QUIET="--quiet"
 
@@ -51,9 +52,9 @@ test-r6rs: ${TMPDIR}
 
 test-r6rs-docker: ${TMPDIR}
 	echo "Building docker image..."
-	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=scheme-library-test-${SCHEME} -f Dockerfile.test ${DOCKER_QUIET} . > /dev/null
-	docker run -t scheme-library-test-${SCHEME} \
-		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r6rs"
+	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=${DOCKER_TAG} -f Dockerfile.test ${DOCKER_QUIET} . > /dev/null
+	ocker stop $$(docker ps -a -q --filter ancestor=${DOCKE_TAG} --format="{{.ID}}")
+	docker run -t ${DOCKER_TAG} sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r6rs"
 
 test-r7rs: ${TMPDIR}
 	cd ${TMPDIR} && echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (srfi 64) (retropikzel ${LIBRARY}))" > test-r7rs.scm
@@ -63,9 +64,8 @@ test-r7rs: ${TMPDIR}
 
 test-r7rs-docker: ${TMPDIR}
 	echo "Building docker image..."
-	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=scheme-library-test-${SCHEME} -f Dockerfile.test ${DOCKER_QUIET} . > /dev/null
-	docker run -t scheme-library-test-${SCHEME} \
-		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r7rs"
+	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=${DOCKER_TAG} -f Dockerfile.test ${DOCKER_QUIET} . > /dev/null
+	docker run -t ${DOCKER_TAG} sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r7rs"
 
 clean:
 	git clean -X -f
