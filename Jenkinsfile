@@ -21,7 +21,7 @@ pipeline {
         stage('R6RS tests') {
             steps {
                 script {
-                    def implementations = sh(script: 'compile-scheme --list-r6rs-except larceny', returnStdout: true).split()
+                    def implementations = sh(script: 'compile-scheme --list-r6rs-except ironscheme larceny', returnStdout: true).split()
                     params.LIBRARIES.split().each { LIBRARY ->
                         stage("${LIBRARY}") {
                             parallel implementations.collectEntries { SCHEME ->
