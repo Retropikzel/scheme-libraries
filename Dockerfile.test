@@ -39,11 +39,8 @@ ENV PATH=/root/.local/bin:${PATH}
 RUN akku update
 WORKDIR /workdir
 RUN mkdir -p srfi
-RUN for srfi in 60 64 180; do cp /build/r7rs-srfi/srfi/${srfi}.* srfi/ && cp /build/r7rs-srfi/srfi/srfi-${srfi}.* srfi/; done
-RUN mkdir -p libs/srfi
-RUN for srfi in 39 60 64 145 180; do cp /build/r7rs-srfi/srfi/${srfi}.* srfi/ && cp /build/r7rs-srfi/srfi/srfi-${srfi}.* libs/srfi/; done
-RUN if [ "${SCHEME}" = "chibi" ]; then rm -rf .libs/srfi/39.*; fi
+RUN for srfi in 39 60 64 180; do cp /build/r7rs-srfi/srfi/${srfi}.* srfi/ && cp /build/r7rs-srfi/srfi/srfi-${srfi}.* srfi/; done
+RUN if [ "${SCHEME}" = "chibi" ]; then rm -rf srfi/39.*; fi
 COPY Makefile .
 COPY retropikzel retropikzel/
-COPY retropikzel libs/retropikzel/
 
