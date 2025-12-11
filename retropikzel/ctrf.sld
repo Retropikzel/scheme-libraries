@@ -41,11 +41,6 @@
       (begin
         (define (time-ms)
           (time-second (current-time)))))
-    (guile
-      (import (srfi 19))
-      (begin
-        (define (time-ms)
-          (time-second (current-time)))))
     (else
       (begin
         (define (time-ms) (/ (/ (current-jiffy) (jiffies-per-second)) 1000)))))
