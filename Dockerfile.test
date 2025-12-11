@@ -37,13 +37,12 @@ WORKDIR /build/akku
 RUN bash install.sh
 ENV PATH=/root/.local/bin:${PATH}
 RUN akku update
-WORKDIR /workdir
-RUN snow-chibi install --impls=${SCHEME} --always-yes "(srfi 64)"
-RUN snow-chibi update
 WORKDIR /build/r7rs-srfi
-RUN make SCHEME=${SCHEME} SRFI=60 build install
-RUN make SCHEME=${SCHEME} SRFI=145 build install
-RUN make SCHEME=${SCHEME} SRFI=180 build install
+RUN make SCHEME=${SCHEME} SRFI=60 SNOW_FORT_ARGS=--always-yes build install
+RUN make SCHEME=${SCHEME} SRFI=39 SNOW_FORT_ARGS=--always-yes build install
+RUN make SCHEME=${SCHEME} SRFI=64 SNOW_FORT_ARGS=--always-yes build install
+RUN make SCHEME=${SCHEME} SRFI=145 SNOW_FORT_ARGS=--always-yes build install
+RUN make SCHEME=${SCHEME} SRFI=180 SNOW_FORT_ARGS=--always-yes build install
 WORKDIR /workdir
 COPY Makefile .
 COPY retropikzel retropikzel/
