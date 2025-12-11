@@ -30,7 +30,6 @@ pipeline {
                                     stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                             sh "make SCHEME=${SCHEME} clean test-docker"
-                                            archiveArtifacts artifacts: 'tmp/*/*.log', fingerprint: true
                                         }
                                     }
                                 }]
