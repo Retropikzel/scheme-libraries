@@ -18,18 +18,37 @@ pipeline {
     }
 
     stages {
-        stage('Tests') {
+        stage('R6RS tests') {
             steps {
                 script {
-                    def implementations = sh(script: 'compile-scheme --list-r7rs-schemes', returnStdout: true).split()
-
+                    def implementations = sh(script: 'compile-scheme --list-r6rs-except larceny', returnStdout: true).split()
                     params.LIBRARIES.split().each { LIBRARY ->
                         stage("${LIBRARY}") {
                             parallel implementations.collectEntries { SCHEME ->
                                 [(SCHEME): {
                                     stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                            sh "make SCHEME=${SCHEME} clean test-docker"
+                                            sh "make SCHEME=${SCHEME} test-r7rs-docker"
+                                        }
+                                    }
+                                }]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('R7RS tests') {
+            steps {
+                script {
+                    def implementations = sh(script: 'compile-scheme --list-r7rs except', returnStdout: true).split()
+                    params.LIBRARIES.split().each { LIBRARY ->
+                        stage("${LIBRARY}") {
+                            parallel implementations.collectEntries { SCHEME ->
+                                [(SCHEME): {
+                                    stage("${SCHEME}") {
+                                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                            sh "make SCHEME=${SCHEME} test-r7rs-docker"
                                         }
                                     }
                                 }]
