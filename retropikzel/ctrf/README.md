@@ -1,5 +1,6 @@
-Test-runner for SRFI-64 that outputs
-[Common Test Report Format](https://ctrf.io/).
+Test-runner for SRFI-64 that outputs Common Test Report Format (CTRF)
+
+[Common Test Report Format](https://ctrf.io/)
 
 
 Usage:

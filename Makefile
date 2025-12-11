@@ -38,18 +38,20 @@ ${TMPDIR}:
 	mkdir -p ${TMPDIR}/retropikzel
 	cp -r retropikzel/${LIBRARY} ${TMPDIR}/retropikzel/
 	cp -r retropikzel/${LIBRARY}.s* ${TMPDIR}/retropikzel/
+	if [ -d srfi ]; then cp -r srfi ${TMPDIR}/; fi
 
 test-r6rs: ${TMPDIR}
 	cd ${TMPDIR} && printf "#!r6rs\n(import (rnrs base) (rnrs control) (rnrs io simple) (rnrs files) (rnrs programs) (srfi :64) (retropikzel ${LIBRARY}))\n" > test-r6rs.sps
 	cat ${TESTFILE} >> ${TMPDIR}/test-r6rs.sps
-	cd ${TMPDIR} && akku install chez-srfi akku-r7rs > /dev/null
+	cd ${TMPDIR} && akku install chez-srfi akku-r7rs
 	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} timeout 60 compile-scheme -I .akku/lib -o test-r6rs test-r6rs.sps
 	cd ${TMPDIR} && timeout 60 ./test-r6rs
 
 test-r6rs-docker: ${TMPDIR}
+	echo "Building docker image..."
 	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=scheme-library-test-${SCHEME} -f Dockerfile.test --quiet . > /dev/null
-	docker run -v "${PWD}:/workdir" -w /workdir -t scheme-library-test-${SCHEME} \
-		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} build install test-r6rs; chmod -R 755 ${TMPDIR}"
+	docker run -t scheme-library-test-${SCHEME} \
+		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r6rs"
 
 test-r7rs: ${TMPDIR}
 	cd ${TMPDIR} && echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (srfi 64) (retropikzel ${LIBRARY}))" > test-r7rs.scm
@@ -58,9 +60,10 @@ test-r7rs: ${TMPDIR}
 	cd ${TMPDIR} && timeout 60 ./test-r7rs
 
 test-r7rs-docker: ${TMPDIR}
+	echo "Building docker image..."
 	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=scheme-library-test-${SCHEME} -f Dockerfile.test --quiet . > /dev/null
-	docker run -v "${PWD}:/workdir" -w /workdir -t scheme-library-test-${SCHEME} \
-		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} build install test-r7rs; chmod -R 755 ${TMPDIR}"
+	docker run -t scheme-library-test-${SCHEME} \
+		sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r7rs"
 
 clean:
 	git clean -X -f

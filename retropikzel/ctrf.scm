@@ -2,10 +2,10 @@
   (lambda ()
     (let ((any->string
             (lambda (any)
-              (parameterize
-                ((current-output-port (open-output-string)))
-                (display any)
-                (get-output-string (current-output-port)))))
+              (let ((port (open-output-string)))
+                (display any port)
+                (newline)
+                (get-output-string port))))
           (runner (test-runner-null))
           (tests (vector))
           (failed-tests (vector))

@@ -9,7 +9,8 @@ RUN wget https://gitlab.com/-/project/6808260/uploads/094ce726ce3c6cf8c14560f1e3
     && tar -xf akku-1.1.0.amd64-linux.tar.xz \
     && mv akku-1.1.0.amd64-linux akku
 RUN git clone https://github.com/ashinn/chibi-scheme.git --depth=1
-RUN git clone https://codeberg.org/retropikzel/compile-scheme.git --depth=1
+RUN git clone https://codeberg.org/retropikzel/compile-scheme.git --depth=2
+RUN git clone https://github.com/srfi-explorations/r7rs-srfi.git --branch=retropikzel-fixes --depth=2
 WORKDIR /build/chibi-scheme
 RUN make
 RUN make install
@@ -21,7 +22,8 @@ RUN git clone https://codeberg.org/foreign-c/foreign-c.git --depth=2
 ARG SCHEME=chibi
 ARG IMAGE=${SCHEME}:head
 FROM schemers/${IMAGE}
-RUN apt-get update && apt-get install -y make gcc libffi-dev libcurl4 gauche
+RUN apt-get update && apt-get install -y \
+    make gcc libffi-dev libcurl4 gauche jq git ca-certificates
 RUN mkdir ${HOME}/.snow && echo "()" > ${HOME}/.snow/config.scm
 COPY --from=build /build /build
 ARG SCHEME=chibi
@@ -35,13 +37,12 @@ WORKDIR /build/akku
 RUN bash install.sh
 ENV PATH=/root/.local/bin:${PATH}
 RUN akku update
-WORKDIR /build/foreign-c
-RUN timeout 30 snow-chibi install --impls=${SCHEME} --always-yes "(srfi 64)" || true
-RUN timeout 30 snow-chibi install --impls=${SCHEME} --always-yes "(srfi 180)" || true
-RUN timeout 30 snow-chibi install --impls=${SCHEME} --always-yes "(foreign c)" || true
-RUN make SCHEME=${SCHEME} build install
+RUN akku install chez-srfi akku-r7rs "(foreign c)"
 WORKDIR /workdir
-RUN cp -r /build/foreign-c/foreign .
+RUN mkdir -p srfi
+RUN for srfi in 60 64 145 180; do cp /build/r7rs-srfi/srfi/${srfi}.* srfi/ && cp /build/r7rs-srfi/srfi/srfi-${srfi}.* srfi/; done
+RUN if [ "${SCHEME}" = "skint" ]; then cp -r /build/r7rs-srfi/srfi/39.* srfi/; fi
+RUN if [ "${SCHEME}" = "tr7" ]; then cp -r /build/r7rs-srfi/srfi/39.* srfi/; fi
 COPY Makefile .
 COPY retropikzel retropikzel/
 

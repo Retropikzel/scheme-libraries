@@ -1,18 +1,19 @@
 (define-library
   (retropikzel ctrf)
   (import (scheme base)
-            (scheme write)
-            (scheme time)
-            (scheme file)
-            (scheme process-context)
-            (srfi 64)
-            (srfi 180))
+          (scheme write)
+          (scheme time)
+          (scheme file)
+          (scheme process-context)
+          (srfi 64)
+          (srfi 180))
   (export ctrf-runner)
   (begin
     (define operation-system
       (cond-expand
         (windows "windows")
         (linux "linux")
+        (guile "linux")
         (else "other"))))
   (cond-expand
     (capyscheme (begin (define implementation-name "capyscheme")))
@@ -37,6 +38,11 @@
   (cond-expand
     (r6rs
       (import (srfi :19))
+      (begin
+        (define (time-ms)
+          (time-second (current-time)))))
+    (guile
+      (import (srfi 19))
       (begin
         (define (time-ms)
           (time-second (current-time)))))
