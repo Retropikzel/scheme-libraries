@@ -40,7 +40,9 @@ RUN akku update
 RUN akku install chez-srfi akku-r7rs "(foreign c)"
 WORKDIR /workdir
 RUN mkdir -p srfi
-RUN for srfi in 60 64 145 180; do cp /build/r7rs-srfi/srfi/${srfi}.* srfi/ && cp /build/r7rs-srfi/srfi/srfi-${srfi}.* srfi/; done
+RUN for srfi in 60 64 180; do cp /build/r7rs-srfi/srfi/${srfi}.* srfi/ && cp /build/r7rs-srfi/srfi/srfi-${srfi}.* srfi/; done
+RUN mkdir -p libs/srfi
+RUN for srfi in 60 64 145 180; do cp /build/r7rs-srfi/srfi/${srfi}.* srfi/ && cp /build/r7rs-srfi/srfi/srfi-${srfi}.* libs/srfi/; done
 RUN if [ "${SCHEME}" = "skint" ]; then cp -r /build/r7rs-srfi/srfi/39.* srfi/; fi
 RUN if [ "${SCHEME}" = "tr7" ]; then cp -r /build/r7rs-srfi/srfi/39.* srfi/; fi
 COPY Makefile .
