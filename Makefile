@@ -59,7 +59,7 @@ test-r6rs-docker: ${TMPDIR}
 test-r7rs: ${TMPDIR}
 	cd ${TMPDIR} && echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (srfi 64) (retropikzel ${LIBRARY}))" > test-r7rs.scm
 	cat ${TESTFILE} >> ${TMPDIR}/test-r7rs.scm
-	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} timeout 120 compile-scheme -I . -o test-r7rs test-r7rs.scm
+	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} timeout 120 compile-scheme -o test-r7rs test-r7rs.scm
 	cd ${TMPDIR} && timeout 60 ./test-r7rs
 
 test-r7rs-docker: ${TMPDIR}
