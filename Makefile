@@ -46,7 +46,6 @@ ${TMPDIR}:
 test-r6rs: ${TMPDIR}
 	cd ${TMPDIR} && printf "#!r6rs\n(import (rnrs base) (rnrs control) (rnrs io simple) (rnrs files) (rnrs programs) (srfi :64) (retropikzel ${LIBRARY}))\n" > test-r6rs.sps
 	cat ${TESTFILE} >> ${TMPDIR}/test-r6rs.sps
-	cd ${TMPDIR} && snow-chibi install --impls=generic --always-yes --install-source-dir=. --install-library-dir=. "(srfi 180)"
 	cd ${TMPDIR} && akku install chez-srfi akku-r7rs
 	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} timeout 120 compile-scheme -I .akku/lib -o test-r6rs test-r6rs.sps
 	cd ${TMPDIR} && timeout 60 ./test-r6rs

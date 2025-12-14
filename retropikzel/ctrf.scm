@@ -111,7 +111,16 @@
               output-file
               (lambda ()
                 (json-write output (current-output-port))))
-            (json-write failed-tests (current-output-port))
-            (newline)
+            (when (not (= (vector-length failed-tests) 0))
+              (display "[")
+              (newline)
+              (vector-for-each
+                (lambda (failed-test)
+                  (display "  ")
+                  (json-write failed-test)
+                  (newline))
+                failed-tests)
+              (display "]")
+              (newline))
             (exit (+ fail xfail)))))
       runner)))
