@@ -33,7 +33,7 @@ RUN bash install.sh
 ENV PATH=/root/.local/bin:${PATH}
 RUN akku update
 WORKDIR /workdir
+RUN snow-chibi --impls=${SCHEME} --always-yes install "(srfi 64)"
 RUN snow-chibi --impls=${SCHEME} --always-yes install "(srfi 180)"
 COPY Makefile .
 COPY retropikzel retropikzel/
-
