@@ -4,4 +4,4 @@ To install library run
 
 
 Change chibi to any other implementation supported by snow-chibi, and library
-to any file in retropikzel/*.sld
+to any filename without suffix in retropikzel/*.sld
