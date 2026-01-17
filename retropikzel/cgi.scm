@@ -1,96 +1,5 @@
 (define stdin (open-binary-input-file "/dev/fd/0"))
 (define buffer-size 4000)
-(define temporary-directory (if (get-environment-variable "SCHEME_CGI_TMP_PATH")
-                              (get-environment-variable "SCHEME_CGI_TMP_PATH")
-                              "/tmp"))
-(define file-move-buffer-size 4000)
-(define encode-replacements
-  (list (list " " "%20")
-        (list " " "+")
-        (list "!" "%21")
-        (list "#" "%23")
-        (list "$" "%24")
-        (list "%" "%25")
-        (list "&" "%26")
-        (list "'" "%27")
-        (list "(" "%28")
-        (list ")" "%29")
-        (list "*" "%2A")
-        (list "+" "%2B")
-        (list "," "%2C")
-        (list "/" "%2F")
-        (list ":" "%3A")
-        (list ";" "%3B")
-        (list "=" "%3D")
-        (list "?" "%3F")
-        (list "@" "%40")
-        (list "[" "%5B")
-        (list "]" "%5D")
-        (list "<" "%3C")
-        (list ">" "%3E")
-        (list "\\" "%5C")
-        (list "\"" "%22")
-        (list "\n" "%0A")
-        (list "\r" "%0D")))
-(define decode-replacements (map reverse encode-replacements))
-
-(define make-temp-filename
-  (lambda (filename)
-    (letrec* ((dev-random (open-binary-input-file "/dev/random"))
-              (min-byte (char->integer #\a))
-              (max-byte (char->integer #\z))
-              (max-length 10)
-              (looper (lambda (result count)
-                        (if (>= count max-length)
-                          result
-                          (let ((byte (read-u8 dev-random)))
-                            (if (and (> byte min-byte) (< byte max-byte))
-                              (looper (bytevector-append result
-                                                         (bytevector byte))
-                                      (+ count 1))
-                              (looper result count))))))
-              (result (string-append (utf8->string (looper (bytevector) 0))
-                                     "_"
-                                     (utf8->string (looper (bytevector) 0))
-                                     "_"
-                                     filename)))
-      (close-port dev-random)
-      result)))
-
-#;(define headers->string
-  (lambda (headers)
-    (apply string-append (map
-                           (lambda (key-value)
-                             (string-append (car key-value) ": " (cdr key-value) "\r\n"))
-                           headers))))
-
-(define get-replacement
-  (lambda (key mode)
-    (let ((r (if (string=? mode "encode")
-               (assoc key encode-replacements)
-               (assoc key decode-replacements))))
-      (if r (car (cdr r)) key))))
-
-(define endecode
-  (lambda (mode s)
-    (if (not s)
-      ""
-      (letrec ((s-length (string-length s))
-               (looper
-                 (lambda (i result)
-                   (if (< i s-length)
-                     (let ((key-length (if (and (string=? mode "decode")
-                                                (string=? (string-copy s i (+ i 1)) "%")
-                                                (> s-length (+ i 2)))
-                                         3
-                                         1)))
-                       (looper (+ i key-length)
-                               (string-append result
-                                              (get-replacement
-                                                (string-copy s i (+ i key-length))
-                                                mode))))
-                     result))))
-        (looper 0 "")))))
 
 (define string-split
   (lambda (str mark)
@@ -191,47 +100,13 @@
 
 (define breaker (char->integer #\-))
 
-
-#;(define request
-  (list (cons 'headers headers)
-        (cons 'parameters parameters)
-        (cons 'cookies cookies)
-        (cons 'body body)
-        (cons 'files files)))
-
-(define (get from key)
-  (let ((value (assoc (if (string? key)
-                        (string->symbol (endecode "encode" key))
-                        key)
-                      from)))
-    (if value (cdr value) #f)))
-(define (get-file file)
-  (let ((value (assoc (endecode "encode" (if (symbol? file)
-                                           (symbol->string file)
-                                           file))
-                      files)))
-    (if value (cdr value) #f)))
-(define (move-file from to)
-  (letrec* ((input (open-binary-input-file from))
-            (output (open-binary-output-file to))
-            (looper (lambda (bytes)
-                      (when (not (eof-object? bytes))
-                        (write-bytevector bytes output)
-                        (looper (read-bytevector file-move-buffer-size input))))))
-    (looper (read-bytevector file-move-buffer-size input))
-    (close-port input)
-    (close-port output)))
-
-(define cgi-exit
+(define cgi-clean
   (lambda args
     (for-each (lambda (file)
                 (let ((path (cdr file)))
                   (when (file-exists? path)
                     (delete-file path))))
-              files)
-    (if (null? args)
-      (exit 0)
-      (exit (car args)))))
+              files)))
 
 (define (cgi)
   (cond ((and content-type-pair (string=? content-type "multipart/form-data"))
@@ -287,9 +162,7 @@
                                                                 (utf8->string (bytevector-copy content
                                                                                                (+ (+ content-mark part-headers-length) 2)
                                                                                                (- index 2)))))))
-                                              (let* ((tmp-file-path (string-append temporary-directory
-                                                                                   "/"
-                                                                                   (make-temp-filename (cdr filename))))
+                                              (let* ((tmp-file-path (make-temp-filename (cdr filename)))
                                                      (tmp-file-port (begin (when (file-exists? tmp-file-path)
                                                                              (delete-file tmp-file-path))
                                                                            (open-binary-output-file tmp-file-path))))
@@ -319,3 +192,26 @@
         (cons 'cookies cookies)
         (cons 'body body)
         (cons 'files files)))
+
+(define (write-to-string str)
+  (let ((port (open-output-string)))
+    (write str port)
+    (get-output-string port)))
+
+(define (handle-request options thunk)
+  (let* ((request (cgi)))
+    (with-exception-handler
+      (lambda (exn) (cgi-clean) #f)
+      (lambda ()
+        (display
+          (parameterize
+            ((current-output-port (open-output-string)))
+            (apply thunk
+                   (list request
+                         (cdr (assq 'headers request))
+                         (cdr (assq 'parameters request))
+                         (cdr (assq 'cookies request))
+                         (cdr (assq 'body request))
+                         (cdr (assq 'files request))))
+            (get-output-string (current-output-port))))))
+    (cgi-clean)))
