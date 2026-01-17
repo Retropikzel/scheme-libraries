@@ -40,4 +40,4 @@ Run ligghtpd:
 
     lighttpd -D -f lighttpd.conf
 
-Then run your SCGI porgram and open your browser to http://127.0.0.1:3000/
+Then run your FCGI porgram and open your browser to http://127.0.0.1:3000/
