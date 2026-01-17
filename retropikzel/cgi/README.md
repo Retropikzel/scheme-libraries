@@ -52,16 +52,13 @@ hello.scm:
             (scheme write)
             (retropikzel cgi))
 
-    (display "Content-type: text/html")
-    (display "\r\n")
-    (display "\r\n")
-    (display "Hello")
-    (display "</br>")
-
-    (display "Request: ")
-    (write (get-request))
-    (display "</br>")
-    (cgi-exit)
+    (handle-request
+     '()
+     (lambda (request headers parameters cookies body files)
+      (display "Content-type: text/html")
+      (display "\r\n")
+      (display "\r\n")
+      (display "Hello")))
 
 Run:
 

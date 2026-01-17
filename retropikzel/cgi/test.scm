@@ -5,8 +5,11 @@
         (retropikzel cgi)
         (srfi 64))
 
-(test-begin "cgi")
+(handle-request
+  '()
+  (lambda (request headers parameters cookies body files)
+    (display "Content-type: text/html")
+    (display "\r\n")
+    (display "\r\n")
+    (display "Hello")))
 
-(display "Hello")
-
-(test-end "cgi")
