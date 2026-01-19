@@ -20,7 +20,8 @@ RUN make build-gauche
 ARG SCHEME=chibi
 ARG IMAGE=${SCHEME}:head
 FROM schemers/${IMAGE}
-RUN apt-get update && apt-get install -y make gcc libffi-dev libcurl4 gauche
+RUN apt-get update && apt-get install -y \
+    make gcc libffi-dev libcurl4 gauche lighttpd
 RUN mkdir ${HOME}/.snow && echo "()" > ${HOME}/.snow/config.scm
 COPY --from=build /build /build
 ARG SCHEME=chibi
@@ -33,7 +34,13 @@ RUN bash install.sh
 ENV PATH=/root/.local/bin:${PATH}
 RUN akku update
 WORKDIR /workdir
+COPY fcgi-lighttpd.conf .
+RUN snow-chibi --impls=${SCHEME} --always-yes install "(srfi 60)"
 RUN snow-chibi --impls=${SCHEME} --always-yes install "(srfi 64)"
+RUN if [ "${SCHEME}" != "gauche" ]; then snow-chibi --impls=${SCHEME} --always-yes install "(srfi 106)"; fi
+RUN if [ "${SCHEME}" != "gauche" ]; then snow-chibi --impls=${SCHEME} --always-yes install --install-source-dir=. --install-library-dir=. "(srfi 106)"; fi
 RUN snow-chibi --impls=${SCHEME} --always-yes install "(srfi 180)"
 COPY Makefile .
 COPY retropikzel retropikzel/
+COPY foreign foreign/
+RUN akku install loko-srfi

@@ -22,8 +22,6 @@ DOCKERIMG="chicken:5"
 endif
 DOCKER_TAG=scheme-library-test-${SCHEME}
 
-DOCKER_QUIET="--quiet"
-
 all: build
 
 build: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikzel/${LIBRARY}/README.md
@@ -44,7 +42,7 @@ ${TMPDIR}:
 	if [ -d srfi ]; then cp -r srfi ${TMPDIR}/; fi
 
 test-r6rs: ${TMPDIR}
-	cd ${TMPDIR} && printf "#!r6rs\n(import (rnrs base) (rnrs control) (rnrs io simple) (rnrs files) (rnrs programs) (srfi :64) (srfi :180) (retropikzel ${LIBRARY}))\n" > test-r6rs.sps
+	cd ${TMPDIR} && printf "#!r6rs\n(import (rnrs base) (rnrs control) (rnrs io simple) (rnrs files) (rnrs programs) (srfi :64) (retropikzel ${LIBRARY}))\n" > test-r6rs.sps
 	cat ${TESTFILE} >> ${TMPDIR}/test-r6rs.sps
 	cd ${TMPDIR} && akku install chez-srfi akku-r7rs
 	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} timeout 120 compile-scheme -I .akku/lib -o test-r6rs test-r6rs.sps
@@ -52,19 +50,19 @@ test-r6rs: ${TMPDIR}
 
 test-r6rs-docker: ${TMPDIR}
 	echo "Building docker image..."
-	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=${DOCKER_TAG} -f Dockerfile.test ${DOCKER_QUIET} .
-	docker run -t ${DOCKER_TAG} sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r6rs"
+	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=${DOCKER_TAG} -f Dockerfile.test .
+	docker run -p 3001:3001 -t ${DOCKER_TAG} sh -c "lighttpd -f fcgi-lighttpd.conf && make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} test-r6rs"
 
 test-r7rs: ${TMPDIR}
-	cd ${TMPDIR} && echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (srfi 64) (srfi 180) (retropikzel ${LIBRARY}))" > test-r7rs.scm
+	cd ${TMPDIR} && echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (srfi 64) (retropikzel ${LIBRARY}))" > test-r7rs.scm
 	cat ${TESTFILE} >> ${TMPDIR}/test-r7rs.scm
 	cd ${TMPDIR} && COMPILE_R7RS=${SCHEME} timeout 120 compile-scheme -I . -o test-r7rs test-r7rs.scm
 	cd ${TMPDIR} && timeout 120 ./test-r7rs
 
 test-r7rs-docker: ${TMPDIR}
 	echo "Building docker image..."
-	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=${DOCKER_TAG} -f Dockerfile.test ${DOCKER_QUIET} .
-	docker run -t ${DOCKER_TAG} sh -c "make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} build install test-r7rs"
+	docker build --build-arg IMAGE=${DOCKERIMG} --build-arg SCHEME=${SCHEME} --tag=${DOCKER_TAG} -f Dockerfile.test .
+	docker run -p 3001:3001 -t ${DOCKER_TAG} sh -c "lighttpd -f fcgi-lighttpd.conf && make SCHEME=${SCHEME} SNOW_CHIBI_ARGS=--always-yes LIBRARY=${LIBRARY} build install test-r7rs"
 
 clean:
 	git clean -X -f
