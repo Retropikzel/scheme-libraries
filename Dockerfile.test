@@ -42,5 +42,4 @@ RUN if [ "${SCHEME}" != "gauche" ]; then snow-chibi --impls=${SCHEME} --always-y
 RUN snow-chibi --impls=${SCHEME} --always-yes install "(srfi 180)"
 COPY Makefile .
 COPY retropikzel retropikzel/
-COPY foreign foreign/
 RUN akku install loko-srfi
