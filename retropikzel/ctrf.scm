@@ -4,7 +4,7 @@
             (lambda (any)
               (let ((port (open-output-string)))
                 (display any port)
-                (newline)
+                (newline port)
                 (get-output-string port))))
           (runner (test-runner-null))
           (tests (vector))
@@ -105,22 +105,16 @@
              (output-file (string-append implementation-name
                                          "-"
                                          first-group-name
-                                         ".ctrf.json")))
+                                         ".ctrf.json"))
+             (short-output `((scheme . ,implementation-name)
+                             (summary . ,summary)
+                             (full . ,output-file))))
             (when (file-exists? output-file) (delete-file output-file))
             (with-output-to-file
               output-file
               (lambda ()
                 (json-write output (current-output-port))))
-            (when (not (= (vector-length failed-tests) 0))
-              (display "[")
-              (newline)
-              (vector-for-each
-                (lambda (failed-test)
-                  (display "  ")
-                  (json-write failed-test)
-                  (newline))
-                failed-tests)
-              (display "]")
-              (newline))
+           (json-write short-output (current-output-port))
+           (newline (current-output-port))
             (exit (+ fail xfail)))))
       runner)))

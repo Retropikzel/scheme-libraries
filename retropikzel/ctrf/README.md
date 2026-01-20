@@ -13,8 +13,9 @@ Usage:
     (test-runner-current (ctrf-runner))
 
 
-Then run tests as usual. The CTRF output will be outputted into JSON file
-named as ${SCHEME}-${FIRST\_TEST\_GROUP\_NAME}.ctrf.json.
+Then run tests as usual. The full CTRF output will be outputted into JSON file
+named as ${SCHEME}-${FIRST\_TEST\_GROUP\_NAME}.ctrf.json. And short summary
+will be outputted into (current-output-port).
 
 Any failing tests and summary will be printed into stdout as list of JSON
 objects.
