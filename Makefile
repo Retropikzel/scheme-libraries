@@ -39,12 +39,13 @@ init-venv: build
 	@rm -rf venv
 	@scheme-venv ${SCHEME} ${RNRS} venv
 	@echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (srfi 64) (retropikzel ${LIBRARY}))" > venv/test.scm
-	@printf "#!r6rs\n(import (rnrs) (srfi :64) (retropikzel ${LIBRARY}))" > venv/test.sps
+	@printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel ${LIBRARY}))" > venv/test.sps
 	@cat ${TESTFILE} >> venv/test.scm
 	@cat ${TESTFILE} >> venv/test.sps
 	@if [ "${RNRS}" = "r6rs" ]; then if [ -d ../foreign-c ]; then cp -r ../foreign-c/foreign venv/lib/; fi; fi
+	@if [ "${RNRS}" = "r6rs" ]; then if [ -d ../foreign-c-srfis ]; then cp -r ../foreign-c-srfis/srfi venv/lib/; fi; fi
 	@if [ "${RNRS}" = "r6rs" ]; then cp -r retropikzel venv/lib/; fi
-	@if [ "${SCHEME}" = "chezs" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
+	@if [ "${SCHEME}" = "chezscheme" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
 	@if [ "${SCHEME}" = "ikarus" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
 	@if [ "${SCHEME}" = "ironscheme" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
 	@if [ "${SCHEME}" = "racket" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi

@@ -1,0 +1,11 @@
+(define-library
+  (retropikzel http-server)
+  (import (scheme base)
+          (scheme read)
+          (scheme write)
+          (scheme char)
+          (scheme file)
+          (retropikzel url-encoding)
+          (srfi 106))
+  (export http-server)
+  (include "http-server.scm"))
