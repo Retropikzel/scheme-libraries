@@ -30,7 +30,6 @@ pipeline {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs run-test-docker"
                                         archiveArtifacts(artifacts: "*.json", allowEmptyArchive: true, fingerprint: true)
-                                        publishCtrfResults: "*.json"
                                     }
                                 }
                             }
@@ -49,7 +48,6 @@ pipeline {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs run-test-docker"
                                         archiveArtifacts(artifacts: "*.json", allowEmptyArchive: true, fingerprint: true)
-                                        publishCtrfResults: "*.json"
                                     }
                                 }
                             }
@@ -57,6 +55,12 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+
+    post {
+        success {
+            publishCtrfResults: "*.json"
         }
     }
 }
