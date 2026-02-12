@@ -60,9 +60,7 @@ pipeline {
 
     post {
         success {
-            steps {
-                publishCtrfResults: "*.json"
-            }
+            publishCtrfResults("*.json")
         }
     }
 }
