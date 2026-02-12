@@ -36,12 +36,17 @@
     (ypsilon (begin (define implementation-name "ypsilon")))
     (else (begin (define implementation-name "unknown"))))
   (cond-expand
-    (r6rs
+    #;(r6rs
       (import (srfi :19))
       (begin
-        (define (time-ms)
+        (define (time-s)
+          (time-second (current-time)))))
+    #;(srfi-19
+      (import (srfi 19))
+      (begin
+        (define (time-s)
           (time-second (current-time)))))
     (else
       (begin
-        (define (time-ms) (/ (/ (current-jiffy) (jiffies-per-second)) 1000)))))
+        (define (time-s) (current-second)))))
   (include "ctrf.scm"))

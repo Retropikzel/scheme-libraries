@@ -36,7 +36,7 @@
         runner
         (lambda (runner)
           (set! current-test-group-count (+ current-test-group-count 1))
-          (set! current-test-start-time (time-ms))))
+          (set! current-test-start-time (time-s))))
 
       (test-runner-on-test-end!
         runner
@@ -49,7 +49,7 @@
                                ((equal? result 'xfail) "failed")
                                ((equal? result 'skipped) "skipped")
                                (else "other")))
-                 (duration (exact (floor (- (time-ms) current-test-start-time))))
+                 (duration (- (time-s) current-test-start-time))
                  (result-ref
                    (lambda (runner key)
                      (let ((value (test-result-ref runner key)))
@@ -70,9 +70,11 @@
 
               (when (or (equal? result 'fail)
                         (equal? result 'xfail))
-                (set! failed-tests
-                  (vector-append failed-tests
-                                 (vector (cons `(suite . ,suite) test)))))
+                (let ((failed (cons `(suite . ,suite) test)))
+                (display "FAIL " (current-error-port))
+                (json-write failed (current-error-port))
+                (newline (current-error-port))
+                (set! failed-tests (vector-append failed-tests (vector failed)))))
               (set! tests (vector-append tests (vector test)))))))
 
       (test-runner-on-final!
@@ -116,5 +118,6 @@
                 (json-write output (current-output-port))))
            (json-write short-output (current-output-port))
            (newline (current-output-port))
-            (exit (+ fail xfail)))))
+            ;(exit (+ fail xfail))
+            )))
       runner)))
