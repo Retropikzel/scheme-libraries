@@ -16,7 +16,8 @@ pipeline {
     parameters {
         string(name: 'R6RS_SCHEMES', defaultValue: 'capyscheme chezscheme guile ikarus ironscheme loko mosh racket sagittarius ypsilon', description: '')
         string(name: 'R7RS_SCHEMES', defaultValue: 'capyscheme chibi chicken cyclone foment gauche gambit guile kawa larceny loko meevax mit-scheme mosh racket sagittarius skint stklos tr7 ypsilon', description: '')
-        string(name: 'LIBRARIES', defaultValue: 'ctrf mouth string url-encoding', description: '')
+        //string(name: 'LIBRARIES', defaultValue: 'ctrf mouth string url-encoding', description: '')
+        string(name: 'LIBRARIES', defaultValue: 'string', description: '')
     }
 
     stages {
@@ -60,7 +61,7 @@ pipeline {
 
     post {
         success {
-            publishCtrfResults: "*.json"
+            publishCtrfResults jsonFilePattern: "*.json"
         }
     }
 }
