@@ -65,10 +65,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        success {
-            publishCtrfResults jsonFilePattern: "*.json"
-        }
-    }
 }
