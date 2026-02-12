@@ -53,7 +53,7 @@ run-test-venv: build
 	./venv/test
 
 run-test-system: build
-	printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel mouth) (retropikzel ${LIBRARY}))" > run-test.sps
+	printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel mouth) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > run-test.sps
 	echo "(test-runner-current (ctrf-runner))" >> run-test.sps
 	cat ${TESTFILE} >> run-test.sps
 	echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (retropikzel mouth) (srfi 64) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > run-test.scm
