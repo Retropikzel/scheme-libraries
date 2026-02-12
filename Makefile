@@ -62,6 +62,7 @@ run-test-system: build
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} --always-yes srfi.64; fi
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} --always-yes retropikzel.mouth; fi
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} --always-yes retropikzel.ctrf; fi
+	if [ "${RNRS}" = "r6rs" ]; then snow-chibi install --impls=generic --always-yes --install-source-dir=. --install-library-dir=. srfi.180; fi
 	if [ "${SCHEME}" = "chezscheme" ]; then akku install akku-r7rs chez-srfi; fi
 	if [ "${SCHEME}" = "ikarus" ]; then akku install akku-r7rs chez-srfi; fi
 	if [ "${SCHEME}" = "ironscheme" ]; then akku install akku-r7rs chez-srfi; fi
@@ -75,7 +76,7 @@ run-test-system: build
 
 run-test-docker:
 	docker build --build-arg IMAGE=${DOCKERIMG} -f Dockerfile.test --tag=scheme-libraries-${SCHEME}-${RNRS} .
-	docker run -v "${PWD}:/workdir" -w /workdir scheme-libraries-${SCHEME}-${RNRS} sh -c "make SCHEME=${SCHEME} RNRS=${RNRS} LIBRARY=${LIBRARY} run-test-system ; chmod 755 *.json"
+	docker run -v "${PWD}:/workdir" -w /workdir scheme-libraries-${SCHEME}-${RNRS} sh -c "make SCHEME=${SCHEME} RNRS=${RNRS} LIBRARY=${LIBRARY} run-test-system ; chmod 755 *.json || true"
 
 clean:
 	git clean -X -f

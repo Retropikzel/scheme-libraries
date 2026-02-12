@@ -11,4 +11,5 @@ venv
 tmp
 run-test*
 Akku.*
+srfi
 
