@@ -59,18 +59,18 @@ run-test-system: build
 	echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (retropikzel mouth) (srfi 64) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > run-test.scm
 	echo "(test-runner-current (ctrf-runner))" >> run-test.scm
 	cat ${TESTFILE} >> run-test.scm
-	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --always-yes srfi.64; fi
-	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install retropikzel.mouth; fi
-	if [ "${RNRS}" = "r7rs" ]; then printf "1\n1\n" | snow-chibi install retropikzel.ctrf; fi
+	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} --always-yes srfi.64; fi
+	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} --always-yes retropikzel.mouth; fi
+	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} --always-yes retropikzel.ctrf; fi
 	if [ "${SCHEME}" = "chezscheme" ]; then akku install akku-r7rs chez-srfi; fi
 	if [ "${SCHEME}" = "ikarus" ]; then akku install akku-r7rs chez-srfi; fi
 	if [ "${SCHEME}" = "ironscheme" ]; then akku install akku-r7rs chez-srfi; fi
 	if [ "${SCHEME}" = "racket" ]; then akku install akku-r7rs chez-srfi; fi
 	if [ "${RNRS}" = "r6rs" ]; then akku install; fi
-	if [ "${SCHEME}-${RNRS}" = "mosh-r7rs" ]; then snow-chibi install --always-yes srfi.64; fi
-	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install ${PKG}; fi
-	if [ "${RNRS}" = "r6rs" ]; then COMPILE_SCHEME=${SCHEME} compile-scheme run-test.sps; fi
-	if [ "${RNRS}" = "r7rs" ]; then COMPILE_SCHEME=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-scheme run-test.scm; fi
+	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} ${PKG}; fi
+	rm -rf run-test
+	if [ "${RNRS}" = "r6rs" ]; then COMPILE_R7RS=${SCHEME} compile-scheme -I .akku/lib run-test.sps; fi
+	if [ "${RNRS}" = "r7rs" ]; then COMPILE_R7RS=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-scheme run-test.scm; fi
 	./run-test
 
 run-test-docker:

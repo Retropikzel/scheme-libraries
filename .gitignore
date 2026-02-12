@@ -10,4 +10,5 @@ foreign
 venv
 tmp
 run-test*
+Akku.*
 
