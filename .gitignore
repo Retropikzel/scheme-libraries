@@ -4,6 +4,7 @@
 *.tgz
 *.log
 .*
+*.json
 retropikzel/*/README.html
 foreign
 venv

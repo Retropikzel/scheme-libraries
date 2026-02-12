@@ -1,6 +1,9 @@
 (define-library
   (retropikzel url-encoding)
-  (import (scheme base))
-  (export url-encode
-          url-decode)
+  (import (scheme base)
+          (scheme write)
+          (scheme char))
+  (export encode-url
+          ;decode-url
+          )
   (include "url-encoding.scm"))
