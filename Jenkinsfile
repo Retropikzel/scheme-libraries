@@ -14,7 +14,7 @@ pipeline {
     }
 
     parameters {
-        string(name: 'LIBRARIES', defaultValue: 'ctrf', description: '')
+        string(name: 'LIBRARIES', defaultValue: 'ctrf mouth string url-encoding', description: '')
     }
 
     stages {
@@ -28,7 +28,7 @@ pipeline {
                                 [(SCHEME): {
                                     stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                            sh "timeout 600 make SCHEME=${SCHEME} DOCKER_QUIET='' test-r6rs-docker"
+                                            sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs run-test-docker"
                                         }
                                     }
                                 }]
@@ -48,7 +48,7 @@ pipeline {
                                 [(SCHEME): {
                                     stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                            sh "timeout 600 make SCHEME=${SCHEME} DOCKER_QUIET='' test-r7rs-docker"
+                                            sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs run-test-docker"
                                         }
                                     }
                                 }]

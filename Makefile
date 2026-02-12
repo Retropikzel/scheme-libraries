@@ -16,7 +16,6 @@ DOCKERIMG=${SCHEME}:head
 ifeq "${SCHEME}" "chicken"
 DOCKERIMG="chicken:5"
 endif
-DOCKER_TAG=scheme-library-test-${SCHEME}
 
 all: build
 
@@ -30,32 +29,53 @@ install:
 uninstall:
 	-snow-chibi remove --impls=${SCHEME} ${PKG}
 
-init-venv: build
-	@rm -rf venv
-	@scheme-venv ${SCHEME} ${RNRS} venv
-	@echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (retropikzel mouth) (srfi 64) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > venv/test.scm
-	@echo "(test-runner-current (ctrf-runner))" >> venv/test.scm
-	@printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel mouth) (retropikzel ${LIBRARY}))" > venv/test.sps
-	@cat ${TESTFILE} >> venv/test.scm
-	@cat ${TESTFILE} >> venv/test.sps
-	@if [ "${RNRS}" = "r7rs" ]; then ./venv/bin/snow-chibi install retropikzel.mouth; fi
-	@if [ "${RNRS}" = "r7rs" ]; then ./venv/bin/snow-chibi install --always-yes retropikzel.ctrf; fi
-	@if [ "${RNRS}" = "r6rs" ]; then if [ -d ../foreign-c ]; then cp -r ../foreign-c/foreign venv/lib/; fi; fi
-	@if [ "${RNRS}" = "r6rs" ]; then if [ -d ../foreign-c-srfis ]; then cp -r ../foreign-c-srfis/srfi venv/lib/; fi; fi
-	@if [ "${RNRS}" = "r6rs" ]; then cp -r retropikzel venv/lib/; fi
-	@if [ "${SCHEME}" = "chezscheme" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
-	@if [ "${SCHEME}" = "ikarus" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
-	@if [ "${SCHEME}" = "ironscheme" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
-	@if [ "${SCHEME}" = "racket" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
-	@if [ "${RNRS}" = "r6rs" ]; then ./venv/bin/akku install; fi
-	@if [ "${SCHEME}" = "chicken" ]; then ./venv/bin/snow-chibi install --always-yes srfi.64; fi
-	@if [ "${SCHEME}-${RNRS}" = "mosh-r7rs" ]; then ./venv/bin/snow-chibi install --always-yes srfi.64; fi
-	@if [ "${RNRS}" = "r7rs" ]; then ./venv/bin/snow-chibi install ${PKG}; fi
-
-run-test: init-venv
+run-test-venv: build
+	rm -rf venv
+	scheme-venv ${SCHEME} ${RNRS} venv
+	echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (retropikzel mouth) (srfi 64) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > venv/test.scm
+	echo "(test-runner-current (ctrf-runner))" >> venv/test.scm
+	printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel mouth) (retropikzel ${LIBRARY}))" > venv/test.sps
+	cat ${TESTFILE} >> venv/test.scm
+	cat ${TESTFILE} >> venv/test.sps
+	if [ "${RNRS}" = "r7rs" ]; then ./venv/bin/snow-chibi install --always-yes srfi.64; fi
+	if [ "${RNRS}" = "r7rs" ]; then ./venv/bin/snow-chibi install retropikzel.mouth; fi
+	if [ "${RNRS}" = "r7rs" ]; then printf "1\n1\n" | ./venv/bin/snow-chibi install retropikzel.ctrf; fi
+	if [ "${RNRS}" = "r6rs" ]; then cp -r retropikzel venv/lib/; fi
+	if [ "${SCHEME}" = "chezscheme" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
+	if [ "${SCHEME}" = "ikarus" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
+	if [ "${SCHEME}" = "ironscheme" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
+	if [ "${SCHEME}" = "racket" ]; then ./venv/bin/akku install akku-r7rs chez-srfi; fi
+	if [ "${RNRS}" = "r6rs" ]; then ./venv/bin/akku install; fi
+	if [ "${SCHEME}-${RNRS}" = "mosh-r7rs" ]; then ./venv/bin/snow-chibi install --always-yes srfi.64; fi
+	if [ "${RNRS}" = "r7rs" ]; then ./venv/bin/snow-chibi install ${PKG}; fi
 	if [ "${RNRS}" = "r6rs" ]; then ./venv/bin/scheme-compile venv/test.sps; fi
-	if [ "${RNRS}" = "r7rs" ]; then VENV_CSC_ARGS="-L -lcurl" ./venv/bin/scheme-compile venv/test.scm; fi
+	if [ "${RNRS}" = "r7rs" ]; then CSC_OPTIONS="-L -lcurl" ./venv/bin/scheme-compile venv/test.scm; fi
 	./venv/test
+
+run-test-system: build
+	mkdir -p tmp
+	echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (retropikzel mouth) (srfi 64) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > tmp/test.scm
+	echo "(test-runner-current (ctrf-runner))" >> tmp/test.scm
+	printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel mouth) (retropikzel ${LIBRARY}))" > tmp/test.sps
+	cat ${TESTFILE} >> tmp/test.scm
+	cat ${TESTFILE} >> tmp/test.sps
+	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --always-yes srfi.64; fi
+	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install retropikzel.mouth; fi
+	if [ "${RNRS}" = "r7rs" ]; then printf "1\n1\n" | snow-chibi install retropikzel.ctrf; fi
+	if [ "${SCHEME}" = "chezscheme" ]; then akku install akku-r7rs chez-srfi; fi
+	if [ "${SCHEME}" = "ikarus" ]; then akku install akku-r7rs chez-srfi; fi
+	if [ "${SCHEME}" = "ironscheme" ]; then akku install akku-r7rs chez-srfi; fi
+	if [ "${SCHEME}" = "racket" ]; then akku install akku-r7rs chez-srfi; fi
+	if [ "${RNRS}" = "r6rs" ]; then akku install; fi
+	if [ "${SCHEME}-${RNRS}" = "mosh-r7rs" ]; then snow-chibi install --always-yes srfi.64; fi
+	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install ${PKG}; fi
+	if [ "${RNRS}" = "r6rs" ]; then COMPILE_SCHEME=${SCHEME} compile-scheme tmp/test.sps; fi
+	if [ "${RNRS}" = "r7rs" ]; then COMPILE_SCHEME=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-scheme tmp/test.scm; fi
+	./tmp/test
+
+run-test-docker:
+	docker build --build-arg IMAGE=${DOCKERIMG} -f Dockerfile.test --tag=scheme-libraries-${SCHEME}-${RNRS} .
+	docker run scheme-libraries-${SCHEME}-${RNRS} sh -c "make SCHEME=${SCHEME} RNRS=${RNRS} LIBRARY=${LIBRARY} run-test-system ; chmod 755 *.json"
 
 clean:
 	git clean -X -f
