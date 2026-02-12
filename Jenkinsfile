@@ -21,6 +21,13 @@ pipeline {
     }
 
     stages {
+
+        stage('Cleanup') {
+            steps {
+                sh "rm -rf *.json"
+            }
+        }
+
         stage('R6RS tests') {
             steps {
                 script {
