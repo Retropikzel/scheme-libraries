@@ -14,6 +14,8 @@ pipeline {
     }
 
     parameters {
+        string(name: 'R6RS_SCHEME', defaultValue: 'capyscheme chezscheme guile ikarus ironscheme loko mosh racket sagittarius ypsilon', description: '')
+        string(name: 'R7RS_SCHEME', defaultValue: 'capyscheme chibi chicken cyclone foment gauche gambit guile kawa larceny loko meevax mit-scheme mosh racket sagittarius skint stklos tr7 ypsilon', description: '')
         string(name: 'LIBRARIES', defaultValue: 'ctrf mouth string url-encoding', description: '')
     }
 
@@ -21,10 +23,9 @@ pipeline {
         stage('R6RS tests') {
             steps {
                 script {
-                    def implementations = sh(script: 'compile-scheme --list-r6rs', returnStdout: true).split()
                     params.LIBRARIES.split().each { LIBRARY ->
                         stage("${LIBRARY}") {
-                            implementations.each { SCHEME ->
+                            params.R6RS_SCHEMES.split().each { SCHEME ->
                                 stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs run-test-docker"
@@ -41,10 +42,9 @@ pipeline {
         stage('R7RS tests') {
             steps {
                 script {
-                    def implementations = sh(script: 'compile-scheme --list-r7rs-except larceny', returnStdout: true).split()
                     params.LIBRARIES.split().each { LIBRARY ->
                         stage("${LIBRARY}") {
-                            implementations.each { SCHEME ->
+                            params.R7RS_SCHEMES.split().each { SCHEME ->
                                 stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs run-test-docker"
