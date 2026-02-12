@@ -21,17 +21,15 @@ pipeline {
         stage('R6RS tests') {
             steps {
                 script {
-                    def implementations = sh(script: 'compile-scheme --list-r6rs-except ironscheme larceny', returnStdout: true).split()
+                    def implementations = sh(script: 'compile-scheme --list-r6rs', returnStdout: true).split()
                     params.LIBRARIES.split().each { LIBRARY ->
                         stage("${LIBRARY}") {
-                            parallel implementations.collectEntries { SCHEME ->
-                                [(SCHEME): {
-                                    stage("${SCHEME}") {
+                            implementations.each { SCHEME ->
+                                stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                            sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs run-test-docker"
-                                        }
+                                        sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs run-test-docker"
                                     }
-                                }]
+                                }
                             }
                         }
                     }
@@ -41,17 +39,15 @@ pipeline {
         stage('R7RS tests') {
             steps {
                 script {
-                    def implementations = sh(script: 'compile-scheme --list-r7rs-except capyscheme cyclone foment gambit meevax skint larceny tr7', returnStdout: true).split()
+                    def implementations = sh(script: 'compile-scheme --list-r7rs-except larceny', returnStdout: true).split()
                     params.LIBRARIES.split().each { LIBRARY ->
                         stage("${LIBRARY}") {
-                            parallel implementations.collectEntries { SCHEME ->
-                                [(SCHEME): {
-                                    stage("${SCHEME}") {
+                            implementations.each { SCHEME ->
+                                stage("${SCHEME}") {
                                         catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                            sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs run-test-docker"
-                                        }
+                                        sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs run-test-docker"
                                     }
-                                }]
+                                }
                             }
                         }
                     }
