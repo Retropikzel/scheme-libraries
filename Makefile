@@ -53,12 +53,12 @@ run-test-venv: build
 	./venv/test
 
 run-test-system: build
-	mkdir -p tmp
-	echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (retropikzel mouth) (srfi 64) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > tmp/test.scm
-	echo "(test-runner-current (ctrf-runner))" >> tmp/test.scm
-	printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel mouth) (retropikzel ${LIBRARY}))" > tmp/test.sps
-	cat ${TESTFILE} >> tmp/test.scm
-	cat ${TESTFILE} >> tmp/test.sps
+	printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel mouth) (retropikzel ${LIBRARY}))" > run-test.sps
+	echo "(test-runner-current (ctrf-runner))" >> run-test.sps
+	cat ${TESTFILE} >> run-test.sps
+	echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (retropikzel mouth) (srfi 64) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > run-test.scm
+	echo "(test-runner-current (ctrf-runner))" >> run-test.scm
+	cat ${TESTFILE} >> run-test.scm
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --always-yes srfi.64; fi
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install retropikzel.mouth; fi
 	if [ "${RNRS}" = "r7rs" ]; then printf "1\n1\n" | snow-chibi install retropikzel.ctrf; fi
@@ -69,13 +69,13 @@ run-test-system: build
 	if [ "${RNRS}" = "r6rs" ]; then akku install; fi
 	if [ "${SCHEME}-${RNRS}" = "mosh-r7rs" ]; then snow-chibi install --always-yes srfi.64; fi
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install ${PKG}; fi
-	if [ "${RNRS}" = "r6rs" ]; then COMPILE_SCHEME=${SCHEME} compile-scheme tmp/test.sps; fi
-	if [ "${RNRS}" = "r7rs" ]; then COMPILE_SCHEME=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-scheme tmp/test.scm; fi
-	./tmp/test
+	if [ "${RNRS}" = "r6rs" ]; then COMPILE_SCHEME=${SCHEME} compile-scheme run-test.sps; fi
+	if [ "${RNRS}" = "r7rs" ]; then COMPILE_SCHEME=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-scheme run-test.scm; fi
+	./run-test
 
 run-test-docker:
 	docker build --build-arg IMAGE=${DOCKERIMG} -f Dockerfile.test --tag=scheme-libraries-${SCHEME}-${RNRS} .
-	docker run scheme-libraries-${SCHEME}-${RNRS} sh -c "make SCHEME=${SCHEME} RNRS=${RNRS} LIBRARY=${LIBRARY} run-test-system ; chmod 755 *.json"
+	docker run -v "${PWD}:/workdir" -w /workdir scheme-libraries-${SCHEME}-${RNRS} sh -c "make SCHEME=${SCHEME} RNRS=${RNRS} LIBRARY=${LIBRARY} run-test-system ; chmod 755 *.json"
 
 clean:
 	git clean -X -f

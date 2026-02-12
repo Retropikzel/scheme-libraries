@@ -9,4 +9,5 @@ retropikzel/*/README.html
 foreign
 venv
 tmp
+run-test*
 

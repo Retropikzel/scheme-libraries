@@ -55,4 +55,10 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            archiveArtifacts(artifacts: '*.json', allowEmptyArchive: true, fingerprint: true)
+        }
+    }
 }
