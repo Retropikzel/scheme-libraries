@@ -36,7 +36,7 @@ logs:
 ${VENV}:
 	scheme-venv ${SCHEME} ${RNRS} ${VENV}
 	if [ "${RNRS}" = "r7rs" ]; then ${VENV}/bin/snow-chibi install --always-yes srfi.64; fi
-	if [ "${RNRS}" = "r7rs" ]; then ${VENV}/bin/snow-chibi install retropikzel.mouth; fi
+	if [ "${RNRS}" = "r7rs" ]; then ${VENV}/bin/snow-chibi install --always-yes retropikzel.mouth; fi
 	if [ "${RNRS}" = "r7rs" ]; then ${VENV}/bin/snow-chibi install --always-yes retropikzel.ctrf; fi
 	if [ "${SCHEME}-${RNRS}" = "mosh-r7rs" ]; then ${VENV}/bin/snow-chibi install --always-yes srfi.64; fi
 	if [ "${SCHEME}" = "chezscheme" ]; then ${VENV}/bin/akku install akku-r7rs chez-srfi; fi
