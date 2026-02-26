@@ -27,7 +27,7 @@ ARG SCHEME=chibi
 FROM docker.io/schemers/${IMAGE}
 
 COPY --from=build /build /build
-RUN apt-get update && apt-get install -y make curl
+RUN apt-get update && apt-get install -y make curl libcurl4-openssl-dev emscripten
 WORKDIR /build/chibi-scheme
 RUN make install
 WORKDIR /build/akku
@@ -42,6 +42,10 @@ RUN mkdir -p /root/.snow && echo "()" > /root/.snow/config.scm
 WORKDIR /workdir
 ARG SCHEME=chibi
 ENV COMPILE_R7RS=${SCHEME}
+RUN snow-chibi install --impls=${SCHEME} --always-yes srfi.64
+RUN snow-chibi install --impls=${SCHEME} --always-yes retropikzel.mouth
+RUN snow-chibi install --impls=${SCHEME} --always-yes retropikzel.ctrf
 COPY Makefile .
 COPY retropikzel retropikzel/
+RUN make retropikzel/wasm/plus.wasm
 

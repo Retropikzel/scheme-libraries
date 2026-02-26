@@ -13,4 +13,13 @@ run-test*
 Akku.*
 srfi
 snow
+*.wasm
+*.js
+*.a
+*.o
+*.so
+*.import.*
+*.link
+core.*
+venv*
 

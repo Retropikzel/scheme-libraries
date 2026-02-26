@@ -1,0 +1,113 @@
+(define (integer->leb128 value)
+  (when (not (exact-integer? value))
+    (error "integer->leb128: value must be exact integer" value))
+  (letrec*
+    ((more 1)
+     (byte #f)
+     (sign-bit #f)
+     (bytes (bytevector))
+     (negative-at-start? (negative? value))
+     (looper
+       (lambda ()
+         (set! byte (bitwise-and value #x7f))
+         (set! value (arithmetic-shift value -7))
+         (set! sign-bit (bitwise-and byte #x40))
+         (if (or (and (= value 0) (= sign-bit 0))
+                 (and (= value -1) (not (= sign-bit 0))))
+           (set! more 0)
+           (set! byte (bitwise-ior byte #x80)))
+         (set! bytes (bytevector-append bytes (bytevector byte)))
+         (when (not (= more 0)) (looper)))))
+    (looper)
+    bytes))
+
+(define (leb128->integer-and-length bytes . start-index)
+  (when (not (bytevector? bytes))
+    (error "leb128->integer-and-lenght: bytes must be bytevector" bytes))
+  (when (and (not (null? start-index))
+             (not (exact-integer? (car start-index))))
+    (error "leb128->integer-and-length: start-index must be exact integer"
+           (car start-index)))
+  (letrec*
+    ((result 0)
+     (shift 0)
+     (byte #f)
+     (index (if (null? start-index) 0 (car start-index)))
+     (looper
+       (lambda ()
+         (set! byte (bytevector-u8-ref bytes index))
+         (set! result (+ result (arithmetic-shift (bitwise-and byte #x7f) shift)))
+         (when (not (= (bitwise-and byte #x80) 0))
+           (set! shift (+ shift 7))
+           (set! index (+ index 1))
+           (looper)))))
+    (looper)
+    (cons
+      (if (not (= (bitwise-and byte #x40) 0))
+        (bitwise-ior result (* (arithmetic-shift 1 (+ shift 7)) -1))
+        result)
+      (+ index 1))))
+
+(define (leb128->integer bytes . start-index)
+  (when (not (bytevector? bytes))
+    (error "leb128->integer: bytes must be bytevector" bytes))
+  (when (and (not (null? start-index))
+             (not (exact-integer? (car start-index))))
+    (error "leb128->integer: start-index must be exact integer"
+           (car start-index)))
+  (car (leb128->integer-and-length bytes
+                                   (if (null? start-index)
+                                     0
+                                     (car start-index)))))
+
+(define (integer->uleb128 value)
+  (when (not (exact-integer? value)) (error "integer->uleb128: value must be exact integer" value))
+  (when (and (not (positive? value))
+             (not (zero? value)))
+    (error "integer->uleb128: value must be unsigned integer" value))
+  (letrec*
+    ((byte #f)
+     (bytes (bytevector))
+     (looper
+       (lambda ()
+         (set! byte (bitwise-and value #x7f))
+         (set! value (arithmetic-shift value -7))
+         (when (not (= value 0)) (set! byte (bitwise-ior byte #x80)))
+         (set! bytes (bytevector-append bytes (bytevector byte)))
+         (if (not (= value 0)) (looper)))))
+    (looper)
+    bytes))
+
+(define (uleb128->integer-and-length bytes . start-index)
+  (when (not (bytevector? bytes))
+    (error "uleb128->integer-and-length: bytes must be bytevector" bytes))
+  (when (and (not (null? start-index))
+             (not (exact-integer? (car start-index))))
+    (error "uleb128->integer-and-lenght: start-index must be exact integer"
+           (car start-index)))
+  (letrec*
+    ((uleb-bytes-count 1)
+     (index (if (null? start-index) 0 (car start-index)))
+     (byte (bytevector-u8-ref bytes index))
+     (shift 0)
+     (result (arithmetic-shift (bitwise-and byte #x7f) shift))
+     (looper
+       (lambda ()
+         (cond
+           ((= (bitwise-and byte #x80) 0) (cons result uleb-bytes-count))
+           (else
+             (set! uleb-bytes-count (+ uleb-bytes-count 1))
+             (set! index (+ index 1))
+             (set! byte (bytevector-u8-ref bytes index))
+             (set! result (bitwise-ior result (arithmetic-shift (bitwise-and byte #x7f) shift)))
+             (set! shift (+ shift 7))
+             (looper))))))
+    (set! shift (+ shift 7))
+    (looper)))
+
+(define (uleb128->integer bytes . start-index)
+  (when (not (bytevector? bytes)) (error "uleb128->integer: bytes must be bytevector" bytes))
+  (when (and (not (null? start-index))
+             (not (exact-integer? (car start-index))))
+    (error "uleb128->integer: start-index must be exact integer" (car start-index)))
+  (car (uleb128->integer-and-length bytes (if (null? start-index) 0 (car start-index)))))
