@@ -81,8 +81,8 @@ run-test-system: logs snow build
 	mv *.json logs/ || true
 
 run-test-docker:
-	docker build --build-arg IMAGE=${DOCKERIMG} -f Dockerfile.test --tag=scheme-libraries-${SCHEME}-${RNRS} .
-	docker run -v "${PWD}/logs:/workdir/logs" -w /workdir scheme-libraries-${SCHEME}-${RNRS} sh -c "make SCHEME=${SCHEME} RNRS=${RNRS} LIBRARY=${LIBRARY} run-test-system"
+	docker build --build-arg IMAGE=${DOCKERIMG} -f Dockerfile.test --tag=scheme-libraries-${SCHEME} .
+	docker run -v "${PWD}/logs:/workdir/logs" -w /workdir scheme-libraries-${SCHEME} sh -c "make SCHEME=${SCHEME} RNRS=${RNRS} LIBRARY=${LIBRARY} run-test-system"
 
 retropikzel/wasm/plus.wasm: retropikzel/wasm/plus.c
 	emcc -o retropikzel/wasm/plus.js retropikzel/wasm/plus.c
