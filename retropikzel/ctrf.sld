@@ -40,18 +40,6 @@
     (tr7 (begin (define implementation-name "tr7")))
     (ypsilon (begin (define implementation-name "ypsilon")))
     (else (begin (define implementation-name "unknown"))))
-  (cond-expand
-    #;(r6rs
-      (import (srfi :19))
-      (begin
-        (define (time-s)
-          (time-second (current-time)))))
-    #;(srfi-19
-      (import (srfi 19))
-      (begin
-        (define (time-s)
-          (time-second (current-time)))))
-    (else
-      (begin
-        (define (time-s) (current-second)))))
+  (begin
+        (define (time-s) (current-second)))
   (include "ctrf.scm"))

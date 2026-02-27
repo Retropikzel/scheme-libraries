@@ -33,6 +33,10 @@ uninstall:
 logs:
 	mkdir -p logs
 
+snow:
+	snow-chibi install --impls=generic --skip-tests?=1 --always-yes --install-source-dir=snow --install-library-dir=snow retropikzel.ctrf || true
+	snow-chibi install --impls=generic --skip-tests?=1 --always-yes --install-source-dir=snow --install-library-dir=snow srfi.64 || true
+
 ${VENV}:
 	scheme-venv ${SCHEME} ${RNRS} ${VENV}
 	if [ "${RNRS}" = "r7rs" ]; then ${VENV}/bin/snow-chibi install --always-yes srfi.64; fi
@@ -58,22 +62,17 @@ run-test-venv: ${VENV} logs build
 	cd ${VENV} && ./test
 	mv ${VENV}/*.json logs/ || true
 
-run-test-system: logs build
+run-test-system: logs snow build
 	printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel mouth) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > run-test.sps
 	echo "(test-runner-current (ctrf-runner))" >> run-test.sps
 	cat ${TESTFILE} >> run-test.sps
 	echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (retropikzel mouth) (srfi 64) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > run-test.scm
 	echo "(test-runner-current (ctrf-runner))" >> run-test.scm
 	cat ${TESTFILE} >> run-test.scm
+	if [ "${RNRS}" = "r6rs" ]; then akku install akku-r7rs; fi
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} --always-yes srfi.64; fi
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} --always-yes retropikzel.mouth; fi
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} --always-yes retropikzel.ctrf; fi
-	if [ "${RNRS}" = "r6rs" ]; then snow-chibi install --impls=generic --always-yes --install-source-dir=. --install-library-dir=. srfi.180; fi
-	if [ "${SCHEME}" = "chezscheme" ]; then akku install akku-r7rs chez-srfi; fi
-	if [ "${SCHEME}" = "ikarus" ]; then akku install akku-r7rs chez-srfi; fi
-	if [ "${SCHEME}" = "ironscheme" ]; then akku install akku-r7rs chez-srfi; fi
-	if [ "${SCHEME}" = "racket" ]; then akku install akku-r7rs chez-srfi; fi
-	if [ "${RNRS}" = "r6rs" ]; then akku install; fi
 	if [ "${RNRS}" = "r7rs" ]; then snow-chibi install --impls=${SCHEME} ${PKG}; fi
 	rm -rf run-test
 	if [ "${RNRS}" = "r6rs" ]; then COMPILE_R7RS=${SCHEME} compile-scheme -I .akku/lib run-test.sps; fi
