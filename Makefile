@@ -38,7 +38,7 @@ snow:
 	snow-chibi install --impls=generic --skip-tests?=1 --always-yes --install-source-dir=snow --install-library-dir=snow srfi.64 || true
 
 ${VENV}:
-	scheme-venv ${SCHEME} ${RNRS} ${VENV}
+	scheme-venv ${SCHEME} ${VENV}
 	if [ "${RNRS}" = "r7rs" ]; then ${VENV}/bin/snow-chibi install --always-yes srfi.64; fi
 	if [ "${RNRS}" = "r7rs" ]; then ${VENV}/bin/snow-chibi install --always-yes retropikzel.mouth; fi
 	if [ "${RNRS}" = "r7rs" ]; then ${VENV}/bin/snow-chibi install --always-yes retropikzel.ctrf; fi
