@@ -34,9 +34,10 @@ pipeline {
                         stage("${LIBRARY}") {
                             params.R6RS_SCHEMES.split().each { SCHEME ->
                                 stage("${SCHEME}") {
-                                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh "rm -rf logs/*.json"
                                         sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs run-test-docker"
-                                        archiveArtifacts(artifacts: "${SCHEME}-${LIBRARY}.ctrf.json", allowEmptyArchive: false, fingerprint: true)
+                                        archiveArtifacts(artifacts: "logs/${SCHEME}-${LIBRARY}.ctrf.json", allowEmptyArchive: false, fingerprint: true)
                                     }
                                 }
                             }
@@ -52,9 +53,10 @@ pipeline {
                         stage("${LIBRARY}") {
                             params.R7RS_SCHEMES.split().each { SCHEME ->
                                 stage("${SCHEME}") {
-                                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh "rm -rf logs/*.json"
                                         sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs run-test-docker"
-                                        archiveArtifacts(artifacts: "${SCHEME}-${LIBRARY}.ctrf.json", allowEmptyArchive: false, fingerprint: true)
+                                        archiveArtifacts(artifacts: "logs/${SCHEME}-${LIBRARY}.ctrf.json", allowEmptyArchive: false, fingerprint: true)
                                     }
                                 }
                             }
