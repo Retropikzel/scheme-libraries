@@ -20,6 +20,10 @@ pipeline {
     }
 
     stages {
+        stage('Docker image warmup') {
+            sh "docker build -f Dockerfile.test"
+        }
+
         stage('R6RS tests') {
             steps {
                 script {
