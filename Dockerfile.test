@@ -25,6 +25,8 @@ RUN snow-chibi install --impls=${SCHEME} --skip-tests?=1 --always-yes retropikze
 WORKDIR /workdir
 ARG SCHEME=chibi
 ENV COMPILE_R7RS=${SCHEME}
+COPY test-headers.sps .
+COPY test-headers.scm .
 COPY Makefile .
 COPY retropikzel retropikzel/
 

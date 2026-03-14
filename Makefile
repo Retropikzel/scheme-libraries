@@ -12,6 +12,13 @@ README=retropikzel/${LIBRARY}/README.html
 TESTFILE=retropikzel/${LIBRARY}/test.scm
 TEST_DEPENDS=srfi.64 retropikzel.mouth retropikzel.ctrf
 
+SFX=scm
+SNOW=snow-chibi --impls=${SCHEME} install --skip-tests?=1 --always-yes
+ifeq "${RNRS}" "r6rs"
+SNOW=snow-chibi --impls=${SCHEME} install --skip-tests?=1 --always-yes --install-source-dir=. --install-library-dir=.
+SFX=sps
+endif
+
 all: build
 
 build: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikzel/${LIBRARY}/README.md
@@ -27,35 +34,19 @@ install: index
 uninstall:
 	snow-chibi remove --impls=${SCHEME} retropikzel.${LIBRARY}
 
-test: logs build index
+logs:
 	mkdir -p logs
-	# tmpdir
+
+test: logs build index
 	mkdir -p .tmp
-	# r6rs testfiles
-	printf "#!r6rs\n(import (rnrs) (srfi :64) (srfi :98) (retropikzel mouth) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > .tmp/test.sps
-	echo "(test-runner-current (ctrf-runner))" >> .tmp/test.sps
-	cat ${TESTFILE} >> .tmp/test.sps
-	# r7rs testfiles
-	echo "(import (scheme base) (scheme write) (scheme read) (scheme char) (scheme file) (scheme process-context) (retropikzel mouth) (srfi 64) (retropikzel ctrf) (retropikzel ${LIBRARY}))" > .tmp/test.scm
-	echo "(test-runner-current (ctrf-runner))" >> .tmp/test.scm
-	cat ${TESTFILE} >> .tmp/test.scm
-	# r6rs
-	if [ "${RNRS}" = "r6rs" ]; then \
-		cd .tmp \
-		&& snow-chibi install --impls=${SCHEME} --skip-tests?=1 --always-yes --install-source-dir=. --install-library-dir=. ${TEST_DEPENDS} retropikzel.${LIBRARY} \
-		&& akku install akku-r7rs 2> /dev/null \
-		&& COMPILE_R7RS=${SCHEME} compile-r7rs -I .akku/lib -o test test.sps; \
-	fi
-	# r7rs
-	if [ "${RNRS}" = "r7rs" ]; then \
-		cd .tmp \
-		&& snow-chibi install --impls=${SCHEME} retropikzel.${LIBRARY} \
-		&& COMPILE_R7RS=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-r7rs -o test test.scm; \
-	fi
+	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' >> .tmp/test.${SFX}
+	cd .tmp && ${SNOW} ${TEST_DEPENDS} retropikzel.${LIBRARY}
+	cd .tmp && akku install akku-r7rs 2>/dev/null
+	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-r7rs -I .akku/lib -o test test.${SFX};
 	cd .tmp && ./test
 	mv .tmp/*.json logs/ || true
 
-test-docker:
+test-docker: logs
 	docker build --build-arg IMAGE=${IMAGE} --build-arg SCHEME=${SCHEME} -f Dockerfile.test --tag=${SCHEME}-testing .
 	docker run -v "${PWD}/logs:/workdir/logs" -w /workdir ${SCHEME}-testing sh -c "make SCHEME=${SCHEME} RNRS=${RNRS} LIBRARY=${LIBRARY} test"
 

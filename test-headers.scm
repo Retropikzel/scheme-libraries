@@ -1,0 +1,12 @@
+(import (scheme base)
+        (scheme write)
+        (scheme read)
+        (scheme char)
+        (scheme file)
+        (scheme process-context)
+        (retropikzel mouth)
+        (srfi 64)
+        (retropikzel ctrf)
+        (retropikzel LIBRARY))
+
+(test-runner-current (ctrf-runner))
