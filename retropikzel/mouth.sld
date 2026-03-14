@@ -4,5 +4,8 @@
           (scheme write)
           (scheme file))
   (export slurp
-          spit)
+          spit
+          ;slurb ; TODO Read whole file as bytevector
+          ;sbit ; TODO Write bytevector into file
+          )
   (include "mouth.scm"))
