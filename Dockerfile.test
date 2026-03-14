@@ -19,14 +19,12 @@ RUN install compile-r7rs /usr/local/bin/compile-r7rs
 RUN mkdir -p /root/.snow && echo "()" > /root/.snow/config.scm
 
 RUN snow-chibi install --impls=${SCHEME} --skip-tests?=1 --always-yes srfi.64
+RUN snow-chibi install --impls=${SCHEME} --skip-tests?=1 --always-yes retropikzel.mouth
 RUN snow-chibi install --impls=${SCHEME} --skip-tests?=1 --always-yes retropikzel.ctrf
 
 WORKDIR /workdir
 ARG SCHEME=chibi
 ENV COMPILE_R7RS=${SCHEME}
-RUN snow-chibi install --impls=${SCHEME} --always-yes srfi.64
-RUN snow-chibi install --impls=${SCHEME} --always-yes retropikzel.mouth
-RUN snow-chibi install --impls=${SCHEME} --always-yes retropikzel.ctrf
 COPY Makefile .
 COPY retropikzel retropikzel/
 RUN make retropikzel/wasm/plus.wasm
