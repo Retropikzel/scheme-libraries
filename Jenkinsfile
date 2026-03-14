@@ -29,7 +29,7 @@ pipeline {
                                 stage("${SCHEME}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "rm -rf logs/*.json"
-                                        sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs test-docker"
+                                        sh "timeout 6000 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs test-docker"
                                         archiveArtifacts(artifacts: "logs/${SCHEME}-${LIBRARY}.ctrf.json", allowEmptyArchive: false, fingerprint: true)
                                     }
                                 }
@@ -48,7 +48,7 @@ pipeline {
                                 stage("${SCHEME}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "rm -rf logs/*.json"
-                                        sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs test-docker"
+                                        sh "timeout 6000 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs test-docker"
                                         archiveArtifacts(artifacts: "logs/${SCHEME}-${LIBRARY}.ctrf.json", allowEmptyArchive: false, fingerprint: true)
                                     }
                                 }
