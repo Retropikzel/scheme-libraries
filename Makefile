@@ -14,16 +14,18 @@ TEST_DEPENDS=srfi.64 retropikzel.mouth retropikzel.ctrf
 
 SFX=scm
 SNOW=snow-chibi --impls=${SCHEME} install --skip-tests?=1 --always-yes
+LIB_PATHS=
 ifeq "${RNRS}" "r6rs"
 SNOW=snow-chibi --impls=${SCHEME} install --skip-tests?=1 --always-yes --install-source-dir=. --install-library-dir=.
 SFX=sps
+LIB_PATHS=-I .akku/lib
 endif
 
 all: build
 
 build: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikzel/${LIBRARY}/README.md
 	echo "<pre>$$(cat retropikzel/${LIBRARY}/README.md)</pre>" > ${README}
-	snow-chibi package --version=${VERSION} --authors=${AUTHOR} --doc=${README} --description="${DESCRIPTION}" ${LIBRARY_FILE}
+	snow-chibi package --always-yes --version=${VERSION} --authors=${AUTHOR} --doc=${README} --description="${DESCRIPTION}" ${LIBRARY_FILE}
 
 index:
 	snow-chibi index ${PKG}
@@ -38,11 +40,12 @@ logs:
 	mkdir -p logs
 
 test: logs build index
+	rm -rf .tmp
 	mkdir -p .tmp
-	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' >> .tmp/test.${SFX}
+	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > .tmp/test.${SFX}
 	cd .tmp && ${SNOW} ${TEST_DEPENDS} retropikzel.${LIBRARY}
-	cd .tmp && akku install akku-r7rs 2>/dev/null
-	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-r7rs -I .akku/lib -o test test.${SFX};
+	cd .tmp && akku install akku-r7rs
+	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-r7rs ${LIB_PATHS} -o test test.${SFX};
 	cd .tmp && ./test
 	mv .tmp/*.json logs/ || true
 

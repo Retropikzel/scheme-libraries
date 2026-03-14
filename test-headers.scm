@@ -4,9 +4,9 @@
         (scheme char)
         (scheme file)
         (scheme process-context)
-        (retropikzel mouth)
         (srfi 64)
-        (retropikzel ctrf)
+        ;(retropikzel mouth)
+        ;(retropikzel ctrf)
         (retropikzel LIBRARY))
 
-(test-runner-current (ctrf-runner))
+;(test-runner-current (ctrf-runner))
