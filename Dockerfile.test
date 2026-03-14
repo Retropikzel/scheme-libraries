@@ -27,5 +27,4 @@ ARG SCHEME=chibi
 ENV COMPILE_R7RS=${SCHEME}
 COPY Makefile .
 COPY retropikzel retropikzel/
-RUN make retropikzel/wasm/plus.wasm
 
