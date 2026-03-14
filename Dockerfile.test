@@ -5,7 +5,7 @@ ENV COMPILE_R7RS=${SCHEME}
 
 RUN apt-get update && apt-get install -y \
     build-essential libffi-dev libcurl4-openssl-dev curl guile-3.0 \
-    git ca-certificates emscripten
+    git ca-certificates
 
 COPY --from=schemers/loko:head /usr/local /usr/loko
 RUN cp -r /usr/loko/* /usr/local/
