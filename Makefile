@@ -26,23 +26,18 @@ build: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikzel
 	echo "<pre>$$(cat retropikzel/${LIBRARY}/README.md)</pre>" > ${README}
 	snow-chibi package --always-yes --version=${VERSION} --authors=${AUTHOR} --doc=${README} --description="${DESCRIPTION}" ${LIBRARY_FILE}
 
-index: build
-	snow-chibi index ${PKG}
-
-install: index
+install:
 	snow-chibi install --impls=${SCHEME} --always-yes ${PKG}
 
-logs:
+test: logs build
 	mkdir -p logs
-
-test: logs build index
 	rm -rf .tmp
 	mkdir -p .tmp
 	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > .tmp/test.${SFX}
 	cd .tmp && ${SNOW} srfi.64
 	cd .tmp && ${SNOW} retropikzel.mouth
 	cd .tmp && ${SNOW} retropikzel.ctrf
-	cd .tmp && ${SNOW} retropikzel.${LIBRARY}
+	cd .tmp && ${SNOW} ../${PKG}
 	cd .tmp && akku install akku-r7rs 2> /dev/null
 	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-r7rs ${LIB_PATHS} -o test test.${SFX};
 	cd .tmp && ./test
