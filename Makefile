@@ -12,10 +12,10 @@ README=retropikzel/${LIBRARY}/README.html
 TESTFILE=retropikzel/${LIBRARY}/test.scm
 
 SFX=scm
-SNOW=snow-chibi --impls=${SCHEME} install --skip-tests?=1 --always-yes
+SNOW=snow-chibi --impls=${SCHEME} install --always-yes
 LIB_PATHS=
 ifeq "${RNRS}" "r6rs"
-SNOW=snow-chibi --impls=${SCHEME} install --skip-tests?=1 --always-yes --install-source-dir=. --install-library-dir=.
+SNOW=snow-chibi --impls=${SCHEME} install --always-yes --install-source-dir=. --install-library-dir=.
 SFX=sps
 LIB_PATHS=-I .akku/lib
 endif
@@ -26,14 +26,11 @@ build: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikzel
 	echo "<pre>$$(cat retropikzel/${LIBRARY}/README.md)</pre>" > ${README}
 	snow-chibi package --always-yes --version=${VERSION} --authors=${AUTHOR} --doc=${README} --description="${DESCRIPTION}" ${LIBRARY_FILE}
 
-index:
+index: build
 	snow-chibi index ${PKG}
 
 install: index
-	snow-chibi install --impls=${SCHEME} --always-yes retropikzel.${LIBRARY}
-
-uninstall:
-	snow-chibi remove --impls=${SCHEME} retropikzel.${LIBRARY}
+	snow-chibi install --impls=${SCHEME} --always-yes ${PKG}
 
 logs:
 	mkdir -p logs
