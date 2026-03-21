@@ -10,7 +10,6 @@ VERSION=$(shell cat retropikzel/${LIBRARY}/VERSION)
 DESCRIPTION=$(shell head -n1 retropikzel/${LIBRARY}/README.md)
 README=retropikzel/${LIBRARY}/README.html
 TESTFILE=retropikzel/${LIBRARY}/test.scm
-TEST_DEPENDS=srfi.64 retropikzel.mouth retropikzel.ctrf
 
 SFX=scm
 SNOW=snow-chibi --impls=${SCHEME} install --skip-tests?=1 --always-yes
@@ -43,8 +42,11 @@ test: logs build index
 	rm -rf .tmp
 	mkdir -p .tmp
 	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > .tmp/test.${SFX}
-	cd .tmp && ${SNOW} ${TEST_DEPENDS} retropikzel.${LIBRARY}
-	cd .tmp && akku install akku-r7rs
+	cd .tmp && ${SNOW} srfi.64
+	cd .tmp && ${SNOW} retropikzel.mouth
+	cd .tmp && ${SNOW} retropikzel.ctrf
+	cd .tmp && ${SNOW} retropikzel.${LIBRARY}
+	cd .tmp && akku install akku-r7rs 2> /dev/null
 	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-r7rs ${LIB_PATHS} -o test test.${SFX};
 	cd .tmp && ./test
 	mv .tmp/*.json logs/ || true
