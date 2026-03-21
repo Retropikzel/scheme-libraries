@@ -36,7 +36,6 @@ test: logs build
 	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > .tmp/test.${SFX}
 	cd .tmp && ${SNOW} srfi.64
 	cd .tmp && ${SNOW} retropikzel.mouth
-	cd .tmp && ${SNOW} retropikzel.ctrf
 	cd .tmp && ${SNOW} ../${PKG}
 	cd .tmp && akku install akku-r7rs 2> /dev/null
 	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-r7rs ${LIB_PATHS} -o test test.${SFX};
