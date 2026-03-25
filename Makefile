@@ -30,21 +30,15 @@ install:
 	snow-chibi install --impls=${SCHEME} --always-yes ${PKG}
 
 test: logs build
-	mkdir -p logs
 	rm -rf .tmp
 	mkdir -p .tmp
+	cp ${PKG} .tmp/
 	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > .tmp/test.${SFX}
-	cd .tmp && ${SNOW} srfi.64
-	cd .tmp && ${SNOW} retropikzel.mouth
-	cd .tmp && ${SNOW} ../${PKG}
-	cd .tmp && akku install akku-r7rs 2> /dev/null
-	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPTIONS="-L -lcurl" compile-r7rs ${LIB_PATHS} -o test test.${SFX};
-	cd .tmp && ./test
-	mv .tmp/*.json logs/ || true
-
-test-docker: logs
-	docker build --build-arg IMAGE=${IMAGE} --build-arg SCHEME=${SCHEME} -f Dockerfile.test --tag=${SCHEME}-testing .
-	docker run -v "${PWD}/logs:/workdir/logs" -w /workdir ${SCHEME}-testing sh -c "make SCHEME=${SCHEME} RNRS=${RNRS} LIBRARY=${LIBRARY} test"
+	cd .tmp && SNOW_PACKAGES="srfi.64 retropikzel.mouth" \
+		APT_PACKAGES="libcurl4-openssl-dev" \
+		COMPILE_R7RS=${SCHEME} \
+		CSC_OPIONS="-L -lcurl" \
+		test-r7rs test.${SFX} ${PKG}
 
 retropikzel/wasm/plus.wasm: retropikzel/wasm/plus.c
 	emcc -o retropikzel/wasm/plus.js retropikzel/wasm/plus.c
