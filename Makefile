@@ -29,7 +29,7 @@ build: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikzel
 install:
 	snow-chibi install --impls=${SCHEME} --always-yes ${PKG}
 
-test: logs build
+test: build
 	rm -rf .tmp
 	mkdir -p .tmp
 	cp ${PKG} .tmp/
