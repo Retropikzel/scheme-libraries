@@ -29,11 +29,18 @@ build: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikzel
 install:
 	snow-chibi install --impls=${SCHEME} --always-yes ${PKG}
 
-test: build
+testfiles: build
 	rm -rf .tmp
 	mkdir -p .tmp
 	cp ${PKG} .tmp/
+	cp -r retropikzel .tmp/
 	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > .tmp/test.${SFX}
+
+test: testfiles
+	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPIONS="-L -lcurl" compile-r7rs -o test-program -I . test.${SFX}
+	cd .tmp && ./test-program
+
+test-docker: testfiles
 	cd .tmp && SNOW_PACKAGES="srfi.64 retropikzel.mouth" \
 		APT_PACKAGES="libcurl4-openssl-dev" \
 		COMPILE_R7RS=${SCHEME} \
