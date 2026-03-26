@@ -41,7 +41,7 @@ test: testfiles
 	cd .tmp && ./test-program
 
 test-docker: testfiles
-	cd .tmp && SNOW_PACKAGES="srfi.64 retropikzel.mouth" \
+	cd .tmp && SNOW_PACKAGES="srfi.64 srfi.60 srfi.145 srfi.180 retropikzel.mouth" \
 		APT_PACKAGES="libcurl4-openssl-dev" \
 		COMPILE_R7RS=${SCHEME} \
 		CSC_OPIONS="-L -lcurl" \
