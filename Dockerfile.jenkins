@@ -1,2 +1,5 @@
 FROM alpine
-RUN apk add make docker
+RUN apk add make git docker
+RUN git clone https://codeberg.org/retropikzel/test-r7rs.git --depth=8 --branch=bugfixes
+RUN cd test-r7rs && ./configure && make && make install
+COPY --from=schemers/chibi:alpine-head /usr/local /usr/local
