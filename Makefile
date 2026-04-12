@@ -41,10 +41,9 @@ test: testfiles
 	cd .tmp && ./test-program
 
 test-docker: testfiles
-	cd .tmp && SNOW_PACKAGES="srfi.64 srfi.60 srfi.145 srfi.180 retropikzel.mouth" \
-		APT_PACKAGES="libcurl4-openssl-dev" \
+	cd .tmp && SNOW_PACKAGES="srfi.39 srfi.64 srfi.60 srfi.145 srfi.180 retropikzel.mouth" \
+		APT_PACKAGES="" \
 		COMPILE_R7RS=${SCHEME} \
-		CSC_OPIONS="-L -lcurl" \
 		test-r7rs test.${SFX} ${PKG}
 
 retropikzel/wasm/plus.wasm: retropikzel/wasm/plus.c
