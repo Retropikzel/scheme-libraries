@@ -1,0 +1,11 @@
+(define-library
+  (retropikzel http)
+  (import (scheme base)
+          (scheme write)
+          (scheme char)
+          (srfi 106)
+          (chibi uri)
+          (chibi string)
+          )
+  (export http-request)
+  (include "http.scm"))
