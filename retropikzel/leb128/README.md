@@ -43,6 +43,15 @@ positive integer or 0 of uleb128 value.
 Sams as uleb128->integer but returns a pair with integer as car and uleb128
 bytevector length, as in how many bytes long the leb128 was, as cdr.
 
+(**read-uleb12** port)
+
+Read uleb128 from given port. *port* must be binary inpurt port.  Returns exact
+positive integer or 0 of uleb128 value.
+
+(**read-leb12** port)
+
+Read leb128 from given port. *port* must be binary inpurt port. Returns exact
+integer of leb128 value.
 
 Resources used:
     https://en.wikipedia.org/wiki/LEB128

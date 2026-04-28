@@ -111,3 +111,56 @@
              (not (exact-integer? (car start-index))))
     (error "uleb128->integer: start-index must be exact integer" (car start-index)))
   (car (uleb128->integer-and-length bytes (if (null? start-index) 0 (car start-index)))))
+
+(define (read-leb128-and-length port)
+  (when (not (binary-port? port))
+    (error "read-leb128-and-length: port must be binary-port" port))
+  (letrec*
+    ((result 0)
+     (shift 0)
+     (byte #f)
+     (looper
+       (lambda ()
+         (set! byte (read-u8 port))
+         (set! result (+ result (arithmetic-shift (bitwise-and byte #x7f) shift)))
+         (when (not (= (bitwise-and byte #x80) 0))
+           (set! shift (+ shift 7))
+           (set! index (+ index 1))
+           (looper)))))
+    (looper)
+    (cons
+      (if (not (= (bitwise-and byte #x40) 0))
+        (bitwise-ior result (* (arithmetic-shift 1 (+ shift 7)) -1))
+        result)
+      (+ index 1))))
+
+(define (read-leb128 port)
+  (when (not (binary-port? port))
+    (error "read-leb128: port must be binary-port" port))
+  (cdr (read-leb128-and-length port)))
+
+(define (read-uleb128-and-length port)
+  (when (not (binary-port? port))
+    (error "read-uleb128: port must be binary port" port))
+  (letrec*
+    ((uleb-bytes-count 1)
+     (byte (read-u8 port))
+     (shift 0)
+     (result (arithmetic-shift (bitwise-and byte #x7f) shift))
+     (looper
+       (lambda ()
+         (cond
+           ((= (bitwise-and byte #x80) 0) (cons result uleb-bytes-count))
+           (else
+             (set! uleb-bytes-count (+ uleb-bytes-count 1))
+             (set! byte (read-u8 port))
+             (set! result (bitwise-ior result (arithmetic-shift (bitwise-and byte #x7f) shift)))
+             (set! shift (+ shift 7))
+             (looper))))))
+    (set! shift (+ shift 7))
+    (looper)))
+
+(define (read-uleb128 port)
+  (when (not (binary-port? port))
+    (error "read-uleb128: port must be binary-port" port))
+  (cdr (read-uleb128-and-length port)))
