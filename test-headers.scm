@@ -5,6 +5,7 @@
         (scheme file)
         (scheme process-context)
         (srfi 64)
+        (srfi 166)
         ;(retropikzel mouth)
         ;(retropikzel ctrf)
         (retropikzel LIBRARY))

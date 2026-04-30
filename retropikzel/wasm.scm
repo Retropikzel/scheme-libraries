@@ -1,8 +1,124 @@
-(define (wasm-bytevector? bytes)
-  (equal? (bytevector-copy bytes 0 4) (bytevector #x0 #x61 #x73 #x6D)))
+(define (list-slice l start end)
+  (vector->list (vector-copy (list->vector l) start end)))
 
-(define (wasm-version bytes)
-  (bytevector-copy bytes 4 8))
+(define (byte->type byte)
+  (cond ((= byte 0) 'void)
+        ;; Number types
+        ((= byte #x7C) 'f64)
+        ((= byte #x7D) 'f32)
+        ((= byte #x7E) 'i64)
+        ((= byte #x7F) 'i32)
+        ;; Vector type
+        ((= byte #x7B) 'V128)
+        ;; Heap types
+        ((= byte #x69) 'exn)
+        ((= byte #x6A) 'array)
+        ((= byte #x6B) 'struct)
+        ((= byte #x6C) 'i31)
+        ((= byte #x6D) 'eq)
+        ((= byte #x6E) 'any)
+        ((= byte #x6F) 'extern)
+        ((= byte #x70) 'func)
+        ((= byte #x71) 'none)
+        ((= byte #x72) 'noextern)
+        ((= byte #x73) 'nofunc)
+        ((= byte #x74) 'noexn)
+        (else
+          (display "byte->type warning: Unknown type ")
+          (display (bytevector byte))
+          (newline)
+          'unknown)))
+
+(define (read-types type-count section-size port result)
+  (letrec*
+    ((type-delimiter #x60)
+     (type-signature-byte->name
+       (lambda (byte)
+         (cond ((= byte #x5E) 'array)
+               ((= byte #x5F) 'struct)
+               ((= byte #x60) 'func)
+               (else 'unknown))))
+     (type-signature-byte?
+       (lambda (byte)
+         (not (symbol=? (type-signature-byte->name byte) 'unknown))))
+     (type-bytes->type
+       (lambda (bytes)
+         (let*
+           ((argument-count (list-ref bytes 1))
+            (argument-types (map byte->type (list-slice bytes 2 (+ 2 argument-count))))
+            (return-type (byte->type (car (reverse bytes)))))
+           (append
+             `(,(type-signature-byte->name (list-ref bytes 0))
+                ,(if (null? argument-types) '() `(param ,@argument-types))
+                ,(if (symbol=? return-type 'void) '() `(result ,return-type)))))))
+     (read-type
+       (lambda (type-result)
+         (cond
+           ((and (or (eof-object? (peek-u8 port))
+                     (type-signature-byte? (peek-u8 port))
+                     (= (+ (apply + (map length result))
+                           (+ (length type-result) 1))
+                        section-size))
+                 (> (length type-result) 0))
+            (reverse type-result))
+           (else
+             (read-type (cons (read-u8 port) type-result)))))))
+    (cond
+      ((= (length result) type-count)
+       (map type-bytes->type (reverse result)))
+      (else (read-types type-count section-size port (cons (read-type '()) result))))))
+
+(define (read-import import-count section-size port result)
+  (if (= (length result) import-count)
+    result
+    (letrec*
+      ((import-kind->type (lambda (type) (cond ((= type 0) 'func) (else 'unknown))))
+       (module-name-length (read-u8 port))
+       (module-name (utf8->string (read-bytevector module-name-length port)))
+       (field-name-length (read-u8 port))
+       (field-name (utf8->string (read-bytevector field-name-length port)))
+       (import-kind (read-u8 port))
+       (type-index (read-u8 port)))
+      (display "HERE: ")
+      (write import-count)
+      (newline)
+      (write result)
+      (newline)
+      (read-import import-count
+                   section-size
+                   port
+                   (cons `(import (module ,module-name)
+                                  (field ,field-name)
+                                  (type ,type-index))
+                         result)))))
+
+(define (read-functions type-count section-size port result)
+  `((bytes ,(read-bytevector (- section-size 1) port))))
+
+(define (read-tables type-count section-size port result)
+  `((bytes ,(read-bytevector (- section-size 1) port))))
+
+(define (read-memory type-count section-size port result)
+  `((bytes ,(read-bytevector (- section-size 1) port))))
+
+(define (read-global type-count section-size port result)
+  `((bytes ,(read-bytevector (- section-size 1) port))))
+
+(define (read-section name size port)
+  (list name
+        (cond
+          ((symbol=? name 'custom) (read-bytevector size port))
+          ((symbol=? name 'type) (read-types (read-u8 port) size port '()))
+          ((symbol=? name 'import) (read-import (read-u8 port) size port '()))
+          ((symbol=? name 'function) (read-functions (read-u8 port) size port '()))
+          ((symbol=? name 'table) (read-tables (read-u8 port) size port '()))
+          ((symbol=? name 'memory) (read-memory (read-u8 port) size port '()))
+          ((symbol=? name 'global) (read-global (read-u8 port) size port '()))
+          ((symbol=? name 'export) (read-bytevector size port))
+          ((symbol=? name 'start) (read-bytevector size port))
+          ((symbol=? name 'element) (read-bytevector size port))
+          ((symbol=? name 'code) (read-bytevector size port))
+          ((symbol=? name 'data) (read-bytevector size port)))))
 
 (define (section-id->name id)
   (cond ((= id 0) 'custom)
@@ -21,101 +137,26 @@
         ((= id 13) 'tag)
         (else (error "section-id->name: unrecognized section id" id))))
 
-(define (bytes->type bytes)
-  (let ((first-byte (bytevector-u8-ref bytes 0)))
-    (cond
-      ((equal? first-byte #x7C) 'f64)
-      ((equal? first-byte #x7D) 'f32)
-      ((equal? first-byte #x7E) 'f64)
-      ((equal? first-byte #x7F) 'f32)
-      (else 'unknown)
-      ;(else (error "Unsupported type byte" first-byte))
-      )))
-
-(define (bytes->types bytes)
-  (letrec*
-    ((bytes-length (bytevector-length bytes))
-     (looper
-       (lambda (index types)
-         (if (>= index bytes-length)
-           types
-           (looper (+ index 1) (bytes->type (bytevector-copy bytes index)))))))
-    (looper 0 '())))
-
-(define (section-bytes->sexp name bytes)
-  (let* ((id-and-id-length (leb128->integer-and-length bytes))
-        (data-bytes (bytevector-copy bytes (cdr id-and-id-length)))
-        (data-length (bytevector-length data-bytes))
-        )
-  (cond
-    #;((equal? name 'type)
-     (let* ((number-of-types (leb128->integer-and-length bytes))
-            (types (bytes->types (bytevector-copy bytes (cdr number-of-types)))))
-       (display "TYPE: type, content = ")
-       (write bytes)
-       (newline)
-       `((number-of-types . ,(car number-of-types))
-         (types . ,types))))
-    ((equal? name 'type)
-     (let ((number-of-types (bytevector-u8-ref bytes 0)))
-       (display "TYPE: type ")
-       (write data-length)
-       (newline)
-       (write data-bytes)
-       (newline)
-       (write number-of-types)
-       (newline)
-       '()))
-    (else '()))))
-
-(define (wasm->sexp-old bytes)
-  (let* ((bytes-length (bytevector-length bytes))
-         (magic-bytes (if (> bytes-length 3) (bytevector-copy bytes 0 4) #u8())))
-    (when (not (equal? magic-bytes #u8(#x00 #x61 #x73 #x6D)))
-      (error "Binary is not wasm (missing magic bytes)"))
-    (letrec*
-      ((wasm-version (bytevector-copy bytes 4 8))
-       (section-data '())
-       (index 8) ;; Jump over magic bytes and version
-       (looper (lambda ()
-                 (when (< index bytes-length)
-                   (let* ((id (bytevector-u8-ref bytes index))
-                          (name (section-id->name id))
-                          (len (uleb128->integer-and-length bytes (+ index 1) 0 0))
-                          (data-bytes (bytevector-copy bytes index (+ index (car len)))))
-                     (display "HERE: index ")
-                     (write index)
-                     (newline)
-                     (display "HERE: data-bytes ")
-                     (write data-bytes)
-                     (newline)
-                     (set! section-data
-                       (append section-data
-                               `((id . ,id)
-                                 (name . ,name)
-                                 (data . ,(section-bytes->sexp name data-bytes)))))
-                     (set! index (+ index 1 (car len) (cdr len)))
-                     (looper)
-                     )))))
-      (looper)
-      section-data)))
+(define (wasm->sexp-loop port result)
+  (let* ((section-id (read-u8 port))
+         (section-name (section-id->name section-id))
+         (size (read-uleb128 port))
+         (section (read-section section-name size port)))
+    (display "Section name: ")
+    (display section-name)
+    (newline)
+    (display "Section size: ")
+    (write size)
+    (newline)
+    (if (eof-object? (peek-u8 port))
+      (reverse result)
+      (wasm->sexp-loop port (cons section result)))))
 
 (define (wasm->sexp port)
   (let ((magic-bytes (read-bytevector 4 port)))
     (when (not (equal? magic-bytes #u8(#x00 #x61 #x73 #x6D)))
       (error "Binary is not wasm (missing magic bytes)"))
-    (let ((version (read-bytevector 4 port)))
-
-    (display "HERE: ")
-    (write magic-bytes)
-    (newline)
-    (write version)
-    (newline)
-    (write (read-uleb128 port))
-    (newline)
-    (write (read-uleb128 port))
-    (newline)
-
-
-    )))
+    (letrec*
+      ((version (read-bytevector 4 port)))
+      (wasm->sexp-loop port '()))))
 

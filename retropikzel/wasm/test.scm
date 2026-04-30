@@ -2,13 +2,8 @@
 
 (define testdir "retropikzel/wasm")
 (define testfile1 (string-append testdir "/" "plus.wasm"))
-
-;(when (not (file-exists? testfile1)) (error (string-append testfile1 " does not exist")))
-
-;(define bytes (with-input-from-file testfile1 (lambda () (read-bytevector 10000))))
-
-(define sexp (with-input-from-file testfile1 (lambda () (wasm->sexp (current-input-port)))))
-(write sexp)
-(newline)
+(define testfile2 (string-append "/tmp/tr7/a.out.wasm"))
+(define sexp (wasm->sexp (open-binary-input-file testfile2)))
+(show #t (pretty sexp))
 
 (test-end "wasm")

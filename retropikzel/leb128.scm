@@ -137,7 +137,7 @@
 (define (read-leb128 port)
   (when (not (binary-port? port))
     (error "read-leb128: port must be binary-port" port))
-  (cdr (read-leb128-and-length port)))
+  (car (read-leb128-and-length port)))
 
 (define (read-uleb128-and-length port)
   (when (not (binary-port? port))
@@ -163,4 +163,4 @@
 (define (read-uleb128 port)
   (when (not (binary-port? port))
     (error "read-uleb128: port must be binary-port" port))
-  (cdr (read-uleb128-and-length port)))
+  (car (read-uleb128-and-length port)))
