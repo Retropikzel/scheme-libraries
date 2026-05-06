@@ -51,8 +51,9 @@ test-docker: testfiles
 		CSC_OPIONS="-L -lcurl" \
 		test-r7rs test.${SFX} ${PKG}
 
-retropikzel/wasm/plus.wasm: retropikzel/wasm/plus.c
+retropikzel/wasm/plus.wat: retropikzel/wasm/plus.c
 	emcc -o retropikzel/wasm/plus.js retropikzel/wasm/plus.c
+	wasm-dis retropikzel/wasm/plus.wasm > retropikzel/wasm/plus.wat
 
 clean:
 	git clean -X -f

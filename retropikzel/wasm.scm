@@ -1,162 +1,201 @@
-(define (list-slice l start end)
-  (vector->list (vector-copy (list->vector l) start end)))
+(define (get-function-names wat)
+  (filter-map
+    (lambda (item)
+      (if (and (equal? (car item) 'export) (assq 'func item))
+        (cons (cadr (assq 'func item)) (string->symbol (cadr item)))
+        #f))
+    (cdr wat)))
 
-(define (byte->type byte)
-  (cond ((= byte 0) 'void)
-        ;; Number types
-        ((= byte #x7C) 'f64)
-        ((= byte #x7D) 'f32)
-        ((= byte #x7E) 'i64)
-        ((= byte #x7F) 'i32)
-        ;; Vector type
-        ((= byte #x7B) 'V128)
-        ;; Heap types
-        ((= byte #x69) 'exn)
-        ((= byte #x6A) 'array)
-        ((= byte #x6B) 'struct)
-        ((= byte #x6C) 'i31)
-        ((= byte #x6D) 'eq)
-        ((= byte #x6E) 'any)
-        ((= byte #x6F) 'extern)
-        ((= byte #x70) 'func)
-        ((= byte #x71) 'none)
-        ((= byte #x72) 'noextern)
-        ((= byte #x73) 'nofunc)
-        ((= byte #x74) 'noexn)
-        (else
-          (display "byte->type warning: Unknown type ")
-          (display (bytevector byte))
-          (newline)
-          'unknown)))
+(define (get-global-export-names wat)
+  (filter-map
+    (lambda (item)
+      (if (and (equal? (car item) 'export) (assq 'global item))
+        (cons (cadr (assq 'global item)) (string->symbol (cadr item)))
+        #f))
+    (cdr wat)))
 
-(define (read-types type-count section-size port result)
+(define (get-globals wat)
+  (filter-map
+    (lambda (item)
+      (cond
+        ((equal? (car item) 'global)
+         `(define ,(list-ref item 1) ,(cadr (car (reverse item)))))
+        ((and (equal? (car item) 'export) (assq 'global item))
+         `(define ,(string->symbol (cadr item)) ,(cadr (car (reverse item)))))
+        (else #f)))
+    (cdr wat)))
+
+#;(define (get-memory-export-names wat)
+  (filter-map
+    (lambda (item)
+      (if (and (equal? (car item) 'export) (assq 'memory item))
+        (string->symbol
+          (string-append "memory-"
+                         (symbol->string (cadr (assq 'memory item)))))
+        #f))
+    (cdr wat)))
+
+(define (get-memories wat)
+  (filter-map
+    (lambda (item)
+      (cond
+        ((equal? (car item) 'memory)
+         (let* ((sizes (list-tail item 2))
+                (size (cond ((= (length sizes) 1)
+                             (list-ref sizes 0))
+                            (else (list-ref sizes 1)))))
+         `(vector-set!  memory-index
+                        ,(string->number
+                           (string-copy (symbol->string (list-ref item 1))
+                                        1))
+                        (make-vector ,size 0))))
+        (else #f)))
+    (cdr wat)))
+
+(define (symbol-append sym1 sym2)
+  (string->symbol (string-append (symbol->string sym1) (symbol->string sym2))))
+
+(define (char-index str c)
   (letrec*
-    ((type-delimiter #x60)
-     (type-signature-byte->name
-       (lambda (byte)
-         (cond ((= byte #x5E) 'array)
-               ((= byte #x5F) 'struct)
-               ((= byte #x60) 'func)
-               (else 'unknown))))
-     (type-signature-byte?
-       (lambda (byte)
-         (not (symbol=? (type-signature-byte->name byte) 'unknown))))
-     (type-bytes->type
-       (lambda (bytes)
-         (let*
-           ((argument-count (list-ref bytes 1))
-            (argument-types (map byte->type (list-slice bytes 2 (+ 2 argument-count))))
-            (return-type (byte->type (car (reverse bytes)))))
-           (append
-             `(,(type-signature-byte->name (list-ref bytes 0))
-                ,(if (null? argument-types) '() `(param ,@argument-types))
-                ,(if (symbol=? return-type 'void) '() `(result ,return-type)))))))
-     (read-type
-       (lambda (type-result)
-         (cond
-           ((and (or (eof-object? (peek-u8 port))
-                     (type-signature-byte? (peek-u8 port))
-                     (= (+ (apply + (map length result))
-                           (+ (length type-result) 1))
-                        section-size))
-                 (> (length type-result) 0))
-            (reverse type-result))
-           (else
-             (read-type (cons (read-u8 port) type-result)))))))
-    (cond
-      ((= (length result) type-count)
-       (map type-bytes->type (reverse result)))
-      (else (read-types type-count section-size port (cons (read-type '()) result))))))
+    ((looper
+       (lambda (index)
+         (cond ((>= index (string-length str)) -1)
+               ((char=? c (string-ref str index)) index)
+               (else (looper (+ index 1)))))))
+    (looper 0)))
 
-(define (read-import import-count section-size port result)
-  (if (= (length result) import-count)
-    result
-    (letrec*
-      ((import-kind->type (lambda (type) (cond ((= type 0) 'func) (else 'unknown))))
-       (module-name-length (read-u8 port))
-       (module-name (utf8->string (read-bytevector module-name-length port)))
-       (field-name-length (read-u8 port))
-       (field-name (utf8->string (read-bytevector field-name-length port)))
-       (import-kind (read-u8 port))
-       (type-index (read-u8 port)))
-      (display "HERE: ")
-      (write import-count)
-      (newline)
-      (write result)
-      (newline)
-      (read-import import-count
-                   section-size
-                   port
-                   (cons `(import (module ,module-name)
-                                  (field ,field-name)
-                                  (type ,type-index))
-                         result)))))
+(define (offset=N->N sym)
+  (string->number
+    (string-copy
+      (symbol->string sym)
+      (+ (char-index (symbol->string sym) #\=) 1))))
 
-(define (read-functions type-count section-size port result)
-  `((bytes ,(read-bytevector (- section-size 1) port))))
+(define (symbol-starts-with? sym str)
+  (if (not (symbol? sym))
+    #f
+    (let ((sym-str (symbol->string sym)))
+      (and (>= (string-length sym-str) (string-length str))
+           (string=? (string-copy sym-str 0 (string-length str)) str)))))
 
-(define (read-tables type-count section-size port result)
-  `((bytes ,(read-bytevector (- section-size 1) port))))
+(define (body-item->sexp item)
+  (cond ((not (list? item)) item)
+        ((equal? (car item) 'local)
+         `(define ,(list-ref item 1) 0))
+        ((equal? (car item) 'global.get)
+         (list-ref item 1))
+        ((equal? (car item) 'global.set)
+         `(set! ,(list-ref item 1) ,@(map body-item->sexp (list-tail item 2))))
+        ((equal? (car item) 'global.tee)
+         `(set! ,(list-ref item 1) ,@(map body-item->sexp (list-tail item 2))))
+        ((equal? (car item) 'local.get)
+         (list-ref item 1))
+        ((equal? (car item) 'local.set)
+         `(set! ,(list-ref item 1) ,@(map body-item->sexp (list-tail item 2))))
+        ((equal? (car item) 'local.tee)
+         `(set! ,(list-ref item 1) ,@(map body-item->sexp (list-tail item 2))))
+        ((equal? (car item) 'result)
+         #f)
+        ((equal? (car item) 'i32.const)
+         (list-ref item 1))
+        ((equal? (car item) 'i32.and)
+         `(bitwise-and ,@(map body-item->sexp (cdr item))))
+        ((equal? (car item) 'i32.add)
+         `(+ ,@(map body-item->sexp (cdr item))))
+        ((equal? (car item) 'i32.sub)
+         `(- ,@(map body-item->sexp (cdr item))))
+        ((equal? (car item) 'i32.store)
+         `(vector-set!
+            (vector-ref memory-index
+                        ,(if (list? (list-ref item 2))
+                           (body-item->sexp (list-ref item 2))
+                           (list-ref item 2)))
+            ,(offset=N->N (body-item->sexp (list-ref item 1)))
+            ,(body-item->sexp (list-ref item 3))))
+        ((equal? (car item) 'i32.load)
+         `(vector-ref
+            (vector-ref memory-index
+                        ,(if (symbol-starts-with? (list-ref item 1) "offset=")
+                           (offset=N->N (list-ref item 1))
+                           0))
+            ,(if (symbol-starts-with? (list-ref item 1) "offset=")
+               (if (list? (list-ref item 2))
+                 (body-item->sexp (list-ref item 2))
+                 (body-item->sexp (list-ref item 2)))
+               (if (list? (list-ref item 1))
+                 (body-item->sexp (list-ref item 1))
+                 (body-item->sexp (list-ref item 1))))))
+        ((equal? (car item) 'call)
+         `(,@(map body-item->sexp (cdr item))))
+        #;((equal? (car item) 'block)
+         (display "HERE: block ")
+         (write (list-tail item 2))
+         (newline)
+         `(call-with-current-continuation
+            (lambda (,(list-ref item 1))
+              ,@(map body-item->sexp (list-tail item 2)))))
+        #;((or (equal? (car item) 'i32.eqz))
+         `(= ,@(map body-item->sexp (cdr item))))
+        #;((equal? (car item) 'br_if)
+         `(when (= 1 ,@(map body-item->sexp (list-tail item 2))) (,(list-ref item 1))))
+        (else (map body-item->sexp item)))
+  )
 
-(define (read-memory type-count section-size port result)
-  `((bytes ,(read-bytevector (- section-size 1) port))))
+(define (get-functions function-names wat)
+  (filter-map
+    (lambda (item)
+      (if (equal? (car item) 'func)
+        (let ((name (if (assq (list-ref item 1) function-names)
+                      (cdr (assq (list-ref item 1) function-names))
+                      (list-ref item 1)))
+              (params (filter-map
+                        (lambda (item)
+                          (if (and (list? item) (equal? (car item) 'param))
+                            (list-ref item 1)
+                            #f))
+                        (cdr item)))
+              (return (filter-map
+                        (lambda (item)
+                          (if (and (list? item)
+                                   (equal? (car item) 'return))
+                            item
+                            #f))
+                        (cdr item)))
+              (body (filter-map
+                      (lambda (item)
+                        (if (and (list? item)
+                                 (equal? (car item) 'param))
+                          #f
+                          (body-item->sexp item)))
+                      (cdr item))))
+          (list-set! item 0 'define)
+          (list-set! item 1 name)
+          `(define ,name
+             (lambda ,params
+               (call-with-current-continuation
+                 (lambda (return)
+                   ,@(cdr body))))))
+        #f))
+    (cdr wat)))
 
-(define (read-global type-count section-size port result)
-  `((bytes ,(read-bytevector (- section-size 1) port))))
-
-(define (read-section name size port)
-  (list name
-        (cond
-          ((symbol=? name 'custom) (read-bytevector size port))
-          ((symbol=? name 'type) (read-types (read-u8 port) size port '()))
-          ((symbol=? name 'import) (read-import (read-u8 port) size port '()))
-          ((symbol=? name 'function) (read-functions (read-u8 port) size port '()))
-          ((symbol=? name 'table) (read-tables (read-u8 port) size port '()))
-          ((symbol=? name 'memory) (read-memory (read-u8 port) size port '()))
-          ((symbol=? name 'global) (read-global (read-u8 port) size port '()))
-          ((symbol=? name 'export) (read-bytevector size port))
-          ((symbol=? name 'start) (read-bytevector size port))
-          ((symbol=? name 'element) (read-bytevector size port))
-          ((symbol=? name 'code) (read-bytevector size port))
-          ((symbol=? name 'data) (read-bytevector size port)))))
-
-(define (section-id->name id)
-  (cond ((= id 0) 'custom)
-        ((= id 1) 'type)
-        ((= id 2) 'import)
-        ((= id 3) 'function)
-        ((= id 4) 'table)
-        ((= id 5) 'memory)
-        ((= id 6) 'global)
-        ((= id 7) 'export)
-        ((= id 8) 'start)
-        ((= id 9) 'element)
-        ((= id 10) 'code)
-        ((= id 11) 'data)
-        ((= id 12) 'data-count)
-        ((= id 13) 'tag)
-        (else (error "section-id->name: unrecognized section id" id))))
-
-(define (wasm->sexp-loop port result)
-  (let* ((section-id (read-u8 port))
-         (section-name (section-id->name section-id))
-         (size (read-uleb128 port))
-         (section (read-section section-name size port)))
-    (display "Section name: ")
-    (display section-name)
-    (newline)
-    (display "Section size: ")
-    (write size)
-    (newline)
-    (if (eof-object? (peek-u8 port))
-      (reverse result)
-      (wasm->sexp-loop port (cons section result)))))
-
-(define (wasm->sexp port)
-  (let ((magic-bytes (read-bytevector 4 port)))
-    (when (not (equal? magic-bytes #u8(#x00 #x61 #x73 #x6D)))
-      (error "Binary is not wasm (missing magic bytes)"))
-    (letrec*
-      ((version (read-bytevector 4 port)))
-      (wasm->sexp-loop port '()))))
-
+(define (wat-module->r7rs-library library-name port)
+  (let* ((wat (read port))
+         (global-export-names (get-global-export-names wat))
+         (globals (get-globals wat))
+         ;(memory-export-names (get-memory-export-names wat))
+         (memories (get-memories wat))
+         (function-names (get-function-names wat))
+         (exports (append (map cdr function-names)
+                          (map cdr global-export-names)
+                          ;memory-export-names
+                          ))
+         (functions (get-functions function-names wat)))
+    `(define-library
+       ,library-name
+       (import (scheme base)
+               (srfi 60))
+       (export ,@exports)
+       (begin
+         (define memory-index (make-vector 8))
+              ,@memories
+              ,@globals
+              ,@functions))))

@@ -1,9 +1,10 @@
 (test-begin "wasm")
 
 (define testdir "retropikzel/wasm")
-(define testfile1 (string-append testdir "/" "plus.wasm"))
-(define testfile2 (string-append "/tmp/tr7/a.out.wasm"))
-(define sexp (wasm->sexp (open-binary-input-file testfile2)))
-(show #t (pretty sexp))
+(define testfile1 (string-append testdir "/" "plus.wat"))
+(define testfile2 (string-append "/tmp/test/tr7.wat"))
+(define lib (wat-module->r7rs-library '(testlibrary) (open-input-file testfile1)))
+
+(with-output-to-file "/tmp/testwasm/testlibrary.sld" (lambda () (show #t (pretty lib))))
 
 (test-end "wasm")

@@ -1,8 +1,7 @@
 (define-library
   (retropikzel wasm)
   (import (scheme base)
-          (scheme read)
           (scheme write)
-          (srfi 1))
-  (export wat-module->r7rs-library)
+          (retropikzel leb128))
+  (export wasm->sexp)
   (include "wasm.scm"))
