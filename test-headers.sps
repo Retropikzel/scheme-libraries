@@ -1,4 +1,3 @@
-#!r6rs
 (import (except (rnrs) delete-file)
         (srfi :64)
         (srfi :98)

@@ -11,10 +11,16 @@ VERSION != cat retropikzel/${LIBRARY}/VERSION
 DESCRIPTION != head -n1 retropikzel/${LIBRARY}/README.md
 README=retropikzel/${LIBRARY}/README.html
 
-SFX != if [ "${RNRS}" = "r6rs" ]; then echo "sps"; else echo "scm"; fi
-SNOW != if [ "${RNRS}" = "r6rs" ]; then echo "snow-chibi --impls=${SCHEME} install --always-yes --install-source-dir=. --install-library-dir=."; else echo "snow-chibi --impls=${SCHEME} install --always-yes"; fi
-LIB_PATHS != if [ "${RNRS}" = "r6rs" ]; then echo "-I .akku/lib"; else echo ""; fi
-SNOW_TEST != if [ -f "retropikzel/${LIBRARY}/snow-test.scm" ]; echo "--test=retropikzel/${LIBRARY}/snow-test.scm"; else echo ""; fi
+SFX=scm
+ifeq "${RNRS}" "r6rs"
+SFX=sps
+endif
+
+DOCKER_TAG=head
+ifeq "${SCHEME}" "chicken"
+DOCKER_TAG=5
+endif
+
 
 all: package
 
@@ -25,7 +31,6 @@ package: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikz
 		--version=${VERSION} \
 		--authors=${AUTHOR} \
 		--doc=${README} \
-		${SNOW_TEST} \
 		--description="${DESCRIPTION}" \
 		${LIBRARY_FILE}
 
@@ -38,18 +43,22 @@ testfiles: package ${TESTFILE}
 	cp ${PKG} .tmp/
 	cp -r retropikzel .tmp/
 	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > .tmp/test.${SFX}
+	cat ${TESTFILE} >> .tmp/test.${SFX}
 
 test: testfiles
 	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPIONS="-L -lcurl" compile-r7rs -o test-program -I . test.${SFX}
 	cd .tmp && ./test-program
 
 test-docker: testfiles
-	cd .tmp && SNOW_PACKAGES="srfi.64 srfi.60 srfi.145 srfi.180 retropikzel.mouth" \
+	cd .tmp && \
+		SNOW_PACKAGES="srfi.64 srfi.60 srfi.145 srfi.180 retropikzel.mouth ${PKG}" \
 		APT_PACKAGES="libcurl4-openssl-dev" \
+		AKKU_PACKAGES="akku-r7rs" \
+		DOCKER_TAG=${DOCKER_TAG} \
 		COMPILE_R7RS=${SCHEME} \
 		TEST_R7RS_DEBUG=1 \
 		CSC_OPIONS="-L -lcurl" \
-		test-r7rs test.${SFX} ${PKG}
+		test-r7rs test.${SFX}
 
 retropikzel/wasm/plus.wat: retropikzel/wasm/plus.c
 	emcc -o retropikzel/wasm/plus.js retropikzel/wasm/plus.c
