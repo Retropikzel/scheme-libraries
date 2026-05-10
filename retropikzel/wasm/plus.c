@@ -8,10 +8,11 @@
 #define EXTERN
 #endif
 
-EXTERN EMSCRIPTEN_KEEPALIVE uint64_t x = 100;
+EXTERN EMSCRIPTEN_KEEPALIVE int x = 1;
+EXTERN EMSCRIPTEN_KEEPALIVE int y = 50000;
 
 EXTERN EMSCRIPTEN_KEEPALIVE int plus(int a, int b) {
-    return a + b;
+    return a + b + x;
 }
 
 /*

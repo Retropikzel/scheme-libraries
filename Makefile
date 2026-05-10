@@ -49,9 +49,9 @@ test: testfiles
 	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPIONS="-L -lcurl" compile-r7rs -o test-program -I . test.${SFX}
 	cd .tmp && ./test-program
 
-test-docker: testfiles
+test-docker: package testfiles
 	cd .tmp && \
-		SNOW_PACKAGES="srfi.64 srfi.60 srfi.145 srfi.180 retropikzel.mouth ${PKG}" \
+		SNOW_PACKAGES="srfi.64 srfi.145 srfi.180 retropikzel.mouth r6rs.bytevectors ${PKG}" \
 		APT_PACKAGES="libcurl4-openssl-dev" \
 		AKKU_PACKAGES="akku-r7rs" \
 		DOCKER_TAG=${DOCKER_TAG} \
