@@ -4,7 +4,6 @@
         (scheme char)
         (scheme file)
         (scheme process-context)
-        (scheme show)
         (srfi 64)
         ;(retropikzel mouth)
         ;(retropikzel ctrf)
