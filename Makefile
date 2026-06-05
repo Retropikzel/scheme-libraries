@@ -32,7 +32,7 @@ package: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikz
 		${LIBRARY_FILE}
 
 install:
-	snow-chibi install --impls=${SCHEME} --always-yes ${PKG}
+	snow-chibi install --update-strategy=never --impls=${SCHEME} --always-yes ${PKG}
 
 testfiles: package ${TESTFILE}
 	rm -rf .tmp
