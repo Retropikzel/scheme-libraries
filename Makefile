@@ -32,7 +32,7 @@ package: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikz
 		${LIBRARY_FILE}
 
 install:
-	snow-chibi install --update-strategy=never --impls=${SCHEME} --always-yes ${PKG}
+	snow-chibi install --impls=${SCHEME} --always-yes ${PKG}
 
 testfiles: package ${TESTFILE}
 	rm -rf .tmp
@@ -55,7 +55,7 @@ test-docker: package testfiles
 		COMPILE_R7RS=${SCHEME} \
 		TEST_R7RS_DEBUG=1 \
 		CSC_OPIONS="-L -lcurl" \
-		test-r7rs test.${SFX}
+		test-r7rs -o test-program test.${SFX}
 
 retropikzel/wasm/plus.wat: retropikzel/wasm/plus.c
 	emcc -o retropikzel/wasm/plus.js retropikzel/wasm/plus.c
