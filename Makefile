@@ -1,9 +1,11 @@
+.SILENT:
 SCHEME=chibi
 RNRS=r7rs
 LIBRARY=ctrf
 VENV=venv-${SCHEME}-${RNRS}-${LIBRARY}
 AUTHOR=retropikzel
 PKG=${AUTHOR}-${LIBRARY}-${VERSION}.tgz
+tmpdir=.tmp/${SCHEME}/${LIBRARY}
 
 LIBRARY_FILE=retropikzel/${LIBRARY}.sld
 TESTFILE=retropikzel/${LIBRARY}/test.scm
@@ -32,30 +34,28 @@ package: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikz
 		${LIBRARY_FILE}
 
 install:
-	snow-chibi install --impls=${SCHEME} --always-yes ${PKG}
+	snow-chibi install --impls=${SCHEME} ${PKG}
 
 testfiles: package ${TESTFILE}
-	rm -rf .tmp
-	mkdir -p .tmp
-	cp ${PKG} .tmp/
-	cp -r retropikzel .tmp/
-	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > .tmp/test.${SFX}
-	cat ${TESTFILE} >> .tmp/test.${SFX}
+	rm -rf ${tmpdir}
+	mkdir -p ${tmpdir}
+	cp ${PKG} ${tmpdir}
+	cp -r retropikzel ${tmpdir}
+	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > ${tmpdir}/test.${SFX}
+	cat ${TESTFILE} >> ${tmpdir}/test.${SFX}
 
 test: testfiles
-	cd .tmp && COMPILE_R7RS=${SCHEME} CSC_OPIONS="-L -lcurl" compile-r7rs -o test-program -I . test.${SFX}
-	cd .tmp && ./test-program
+	cd ${tmpdir} && COMPILE_R7RS=${SCHEME} CSC_OPIONS="-L -lcurl" compile-r7rs -o test-program -I . test.${SFX}
+	cd ${tmpdir} && ./test-program
 
 test-docker: package testfiles
-	cd .tmp && \
-		SNOW_PACKAGES="srfi.64 srfi.145 srfi.180 retropikzel.mouth r6rs.bytevectors ${PKG}" \
-		APT_PACKAGES="libcurl4-openssl-dev" \
-		AKKU_PACKAGES="akku-r7rs" \
-		DOCKER_TAG=${DOCKER_TAG} \
-		COMPILE_R7RS=${SCHEME} \
-		TEST_R7RS_DEBUG=1 \
-		CSC_OPIONS="-L -lcurl" \
-		test-r7rs -o test-program test.${SFX}
+	SNOW_PACKAGES="srfi.64 ${PKG}" \
+	APT_PACKAGES="libcurl4-openssl-dev" \
+	AKKU_PACKAGES="akku-r7rs" \
+	DOCKER_TAG=${DOCKER_TAG} \
+	COMPILE_R7RS=${SCHEME} \
+	CSC_OPIONS="-L -lcurl" \
+		test-r7rs -o ${tmpdir}/test-program ${tmpdir}/test.${SFX}
 
 retropikzel/wasm/plus.wat: retropikzel/wasm/plus.c
 	emcc -o retropikzel/wasm/plus.js retropikzel/wasm/plus.c
