@@ -33,10 +33,12 @@ package: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikz
 		--description="${DESCRIPTION}" \
 		${LIBRARY_FILE}
 
+${PKG}: package
+
 install:
 	snow-chibi install --impls=${SCHEME} ${PKG}
 
-testfiles: package ${TESTFILE}
+testfiles: ${PKG} ${TESTFILE}
 	rm -rf ${tmpdir}
 	mkdir -p ${tmpdir}
 	cp ${PKG} ${tmpdir}
@@ -48,7 +50,7 @@ test: testfiles
 	cd ${tmpdir} && COMPILE_R7RS=${SCHEME} CSC_OPIONS="-L -lcurl" compile-r7rs -o test-program -I . test.${SFX}
 	cd ${tmpdir} && ./test-program
 
-test-docker: package testfiles
+test-docker: testfiles
 	SNOW_PACKAGES="srfi.64 ${PKG}" \
 	APT_PACKAGES="libcurl4-openssl-dev" \
 	AKKU_PACKAGES="akku-r7rs" \
