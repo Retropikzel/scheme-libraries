@@ -20,32 +20,36 @@ pipeline {
     }
 
     stages {
-        stage('R6RS tests') {
-            steps {
-                script {
-                    env.LIBRARIES.split().each { LIBRARY ->
-                        stage("${LIBRARY}") {
-                            env.R6RS_SCHEMES.split().each { SCHEME ->
-                                stage("${SCHEME}") {
-                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                        sh "timeout 6000 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs test-docker"
+        stage('Parallel') {
+            parallel {
+                stage('R6RS tests') {
+                    steps {
+                        script {
+                            env.LIBRARIES.split().each { LIBRARY ->
+                                stage("${LIBRARY}") {
+                                    env.R6RS_SCHEMES.split().each { SCHEME ->
+                                        stage("${SCHEME}") {
+                                            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                                sh "timeout 6000 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs test-docker"
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
-            }
-        }
-        stage('R7RS tests') {
-            steps {
-                script {
-                    env.LIBRARIES.split().each { LIBRARY ->
-                        stage("${LIBRARY}") {
-                            env.R7RS_SCHEMES.split().each { SCHEME ->
-                                stage("${SCHEME}") {
-                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                        sh "timeout 6000 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs test-docker"
+                stage('R7RS tests') {
+                    steps {
+                        script {
+                            env.LIBRARIES.split().each { LIBRARY ->
+                                stage("${LIBRARY}") {
+                                    env.R7RS_SCHEMES.split().each { SCHEME ->
+                                        stage("${SCHEME}") {
+                                            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                                sh "timeout 6000 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs test-docker"
+                                            }
+                                        }
                                     }
                                 }
                             }
