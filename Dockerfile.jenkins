@@ -1,5 +1,4 @@
 FROM schemers/chibi:head
 RUN apt-get update && apt-get install -y \
     gcc ca-certificates libffi-dev docker.io make
-ARG timestamp=0
-RUN snow-chibi install --impls=chibi retropikzel.test-r7rs && echo "$timestamp"
+RUN snow-chibi install --impls=chibi retropikzel.test-r7rs
