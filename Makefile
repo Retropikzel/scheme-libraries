@@ -2,7 +2,8 @@
 SCHEME=chibi
 RNRS=r7rs
 LIBRARY=ctrf
-VENV=venv-${SCHEME}-${RNRS}-${LIBRARY}
+DOCKER_TAG=head
+
 AUTHOR=retropikzel
 PKG=${AUTHOR}-${LIBRARY}-${VERSION}.tgz
 tmpdir=.tmp/${SCHEME}/${LIBRARY}
@@ -18,7 +19,19 @@ ifeq "${RNRS}" "r6rs"
 SFX=sps
 endif
 
+ifeq "${SCHEME}" "capyscheme"
 DOCKER_TAG=head
+endif
+ifeq "${SCHEME}" "chibi"
+DOCKER_TAG=head
+endif
+ifeq "${SCHEME}" "chicken"
+DOCKER_TAG=head
+endif
+ifeq "${SCHEME}" "gauche"
+DOCKER_TAG=head
+endif
+
 
 
 all: package
