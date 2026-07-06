@@ -55,12 +55,11 @@ testfiles: ${PKG} ${TESTFILE}
 	rm -rf ${tmpdir}
 	mkdir -p ${tmpdir}
 	cp ${PKG} ${tmpdir}
-	cp -r retropikzel ${tmpdir}
-	cat test-headers.${SFX} ${TESTFILE} | sed 's/LIBRARY/${LIBRARY}/' > ${tmpdir}/test.${SFX}
+	cat test-headers.${SFX} | sed 's/LIBRARY/${LIBRARY}/' > ${tmpdir}/test.${SFX}
 	cat ${TESTFILE} >> ${tmpdir}/test.${SFX}
 
 test: testfiles
-	cd ${tmpdir} && COMPILE_R7RS=${SCHEME} CSC_OPIONS="-L -lcurl" compile-r7rs -o test-program -I . test.${SFX}
+	cd ${tmpdir} && COMPILE_R7RS=${SCHEME} CSC_OPIONS="-L -lcurl" compile-r7rs -o test-program test.${SFX}
 	cd ${tmpdir} && ./test-program
 
 test-docker: testfiles
