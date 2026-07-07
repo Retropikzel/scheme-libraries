@@ -3,6 +3,7 @@
   (import (scheme base)
           (scheme write)
           (scheme eval)
+          (retropikzel hardware-info)
           (retropikzel purer))
   (cond-expand
     #;((library (srfi 18))
