@@ -5,8 +5,9 @@
           (scheme eval)
           (retropikzel hardware-info)
           (retropikzel purer))
+  (include "parallel/shared.scm")
   (cond-expand
-    #;((library (srfi 18))
+    ((library (srfi 18))
      (import (srfi 18))
      (include "parallel-srfi-18.scm"))
     (else
