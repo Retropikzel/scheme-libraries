@@ -41,6 +41,5 @@
     (tr7 (begin (define implementation-name "tr7")))
     (ypsilon (begin (define implementation-name "ypsilon")))
     (else (begin (define implementation-name "unknown"))))
-  (begin
-        (define (time-s) (current-second)))
+  (begin (define (time-s) (current-second)))
   (include "ctrf.scm"))

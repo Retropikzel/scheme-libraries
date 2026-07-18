@@ -24,3 +24,5 @@ snow
 core.*
 venv*
 retropikzel/wasm/plus.sld
+retropikzel/*.c
+retropikzel/*.meta
