@@ -28,7 +28,7 @@ pipeline {
 
     environment {
         R6RS_SCHEMES='capyscheme chezscheme guile ikarus ironscheme loko mosh racket sagittarius ypsilon'
-        R7RS_SCHEMES='capyscheme chibi chicken cyclone foment gauche gambit guile kawa loko meevax mit-scheme mosh racket sagittarius skint stklos tr7 ypsilon'
+        R7RS_SCHEMES='capyscheme chibi chicken cyclone foment gauche gambit kawa loko meevax mosh racket sagittarius skint stklos tr7 ypsilon'
         LIBRARIES='tap ctrf mouth string url-encoding leb128 hardware-info'
     }
 

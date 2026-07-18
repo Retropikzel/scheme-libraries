@@ -63,7 +63,7 @@ test: testfiles
 	cd ${tmpdir} && ./test-program
 
 test-docker: testfiles
-	SNOW_PACKAGES="srfi.64 ${PKG}" \
+	SNOW_PACKAGES="srfi.64 srfi.180 ${PKG}" \
 	APT_PACKAGES="libcurl4-openssl-dev" \
 	AKKU_PACKAGES="akku-r7rs" \
 	DOCKER_TAG=${DOCKER_TAG} \
