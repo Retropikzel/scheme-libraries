@@ -1,4 +1,5 @@
 FROM schemers/chibi:head
 RUN apt-get update && apt-get install -y \
     gcc ca-certificates libffi-dev docker.io make
+RUN mkdir -p ~/.snow && echo "()" > ~/.snow/config.scm
 RUN snow-chibi install --impls=chibi --always-yes retropikzel.test-r7rs
