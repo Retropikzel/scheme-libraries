@@ -1,7 +1,8 @@
 (define-syntax ctrf-runner
   (syntax-rules ()
     ((_)
-     (let ((any->string
+     (let ((time-s (lambda () (current-second)))
+           (any->string
              (lambda (any)
                (let ((port (open-output-string)))
                  (display any port)
