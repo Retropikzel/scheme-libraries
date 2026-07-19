@@ -1,3 +1,6 @@
+(define tap-output-port (current-output-port))
+(define (set-tap-runner-output-port! port)
+  (set! tap-output-port port))
 (define-syntax tap-runner
   (syntax-rules ()
     ((_)
@@ -16,10 +19,15 @@
                      (set! indentation (list-tail indentation 2)))))
                (print
                  (lambda args
-                   (map display (append indentation args))))
+                   (map (lambda (item)
+                          (display item tap-output-port))
+                        (append indentation args))))
                (println
                  (lambda args
-                   (map display (append indentation args)) (display "\n")))
+                   (map (lambda (item)
+                          (display item tap-output-port))
+                        (append indentation args))
+                   (display "\n" tap-output-port)))
                (runner (test-runner-null))
                (started? #f)
                (current-test-groups (vector))
@@ -39,7 +47,8 @@
        (test-runner-on-group-end!
          runner
          (lambda (runner)
-           (println "1.." current-test-group-count)
+           (when (> current-test-group-count 0)
+             (println "1.." current-test-group-count))
            (decrease-indentation)
            (set! current-test-groups
              (list->vector

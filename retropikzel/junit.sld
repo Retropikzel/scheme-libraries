@@ -5,5 +5,6 @@
           (scheme file)
           (srfi 19)
           (srfi 64))
-  (export junit-runner)
+  (export junit-runner
+          set-junit-runner-output-port!)
   (include "junit.scm"))

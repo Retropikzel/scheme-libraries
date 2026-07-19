@@ -1,3 +1,6 @@
+(define junit-runner-output-port (current-output-port))
+(define (set-junit-runner-output-port! port)
+  (set! junit-runner-output-port port))
 
 (define-syntax junit-runner
   (syntax-rules ()
@@ -21,10 +24,14 @@
                      (set! indentation (list-tail indentation 2)))))
                (print
                  (lambda args
-                   (map display (append indentation args))))
+                   (map (lambda (item)
+                          (display item junit-runner-output-port))
+                        (append indentation args))))
                (println
                  (lambda args
-                   (map display (append indentation args)) (newline)))
+                   (map (lambda (item)
+                          (display item junit-runner-output-port))
+                        (append indentation args)) (newline junit-runner-output-port)))
                (string-replace
                  (lambda (str replace with)
                    (list->string
