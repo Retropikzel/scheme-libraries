@@ -14,12 +14,10 @@ VERSION != cat retropikzel/${LIBRARY}/VERSION
 DESCRIPTION != head -n1 retropikzel/${LIBRARY}/README.md
 README=retropikzel/${LIBRARY}/README.html
 
-SNOW_PACKAGES=""
 AKKU_PACKAGES=""
 SFX=scm
 ifeq "${RNRS}" "r6rs"
 SFX=sps
-SNOW_PACKAGES=
 AKKU_PACKAGES="akku-r7rs"
 endif
 
@@ -67,7 +65,7 @@ test: testfiles
 	cd ${tmpdir} && ./test-program
 
 test-docker: testfiles
-	SNOW_PACKAGES="${SNOW_PACKAGES} ${PKG}" \
+	SNOW_PACKAGES="srfi.19 srfi.64 srfi.180 ${PKG}" \
 	APT_PACKAGES="libcurl4-openssl-dev" \
 	AKKU_PACKAGES="${AKKU_PACKAGES}" \
 	DOCKER_TAG=${DOCKER_TAG} \
