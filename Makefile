@@ -2,7 +2,7 @@
 SCHEME=chibi
 RNRS=r7rs
 LIBRARY=ctrf
-DOCKER_TAG=head
+DOCKER_TAG=latest
 
 AUTHOR=retropikzel
 PKG=${AUTHOR}-${LIBRARY}-${VERSION}.tgz
