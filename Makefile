@@ -14,9 +14,13 @@ VERSION != cat retropikzel/${LIBRARY}/VERSION
 DESCRIPTION != head -n1 retropikzel/${LIBRARY}/README.md
 README=retropikzel/${LIBRARY}/README.html
 
+SNOW_PACKAGES=""
+AKKU_PACKAGES=""
 SFX=scm
 ifeq "${RNRS}" "r6rs"
 SFX=sps
+SNOW_PACKAGES=
+AKKU_PACKAGES="akku-r7rs"
 endif
 
 ifeq "${SCHEME}" "capyscheme"
@@ -63,9 +67,9 @@ test: testfiles
 	cd ${tmpdir} && ./test-program
 
 test-docker: testfiles
-	SNOW_PACKAGES="srfi.64 srfi.180 ${PKG}" \
+	SNOW_PACKAGES="${SNOW_PACKAGES} ${PKG}" \
 	APT_PACKAGES="libcurl4-openssl-dev" \
-	AKKU_PACKAGES="akku-r7rs" \
+	AKKU_PACKAGES="${AKKU_PACKAGES}" \
 	DOCKER_TAG=${DOCKER_TAG} \
 	COMPILE_R7RS=${SCHEME} \
 	CSC_OPIONS="-L -lcurl" \

@@ -1,4 +1,4 @@
-TAP, the Test Anything Protocol, is a simple text-based interface between testing modules in a test harness.
+TAP, the Test Anything Protocol, output for SRFI-64
 
 [Test Anything Protocol](https://testanything.org/)
 
