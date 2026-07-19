@@ -14,22 +14,6 @@ TAP output for SRFI-64
 
 
 
-## Jenkins usage tip
-
-Use JUnit test runner in Jenkins and output to file, use TAP anywhere else and
-output to stdout.
-
-(cond
-  ;; In Jenkins
-  ((get-environment-variable "JENKINS_URL")
-   (let ((junit-file "junit-result.xml"))
-     (test-runner-current (junit-runner))
-     (when (file-exists? junit-file) (delete-file junit-file))
-     (set-junit-runner-output-port! (open-output-file junit-file))))
-  (else (test-runner-current (tap-runner))))
-
-
-
 ## Reference
 
 (**tap-runner**)
