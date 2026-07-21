@@ -44,7 +44,6 @@ pipeline {
                                         stage("${SCHEME}") {
                                             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                                 sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs test-docker"
-                                                junit ".tmp/*/*/*.xml"
                                             }
                                         }
                                     }
@@ -62,7 +61,6 @@ pipeline {
                                         stage("${SCHEME}") {
                                             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                                 sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs test-docker"
-                                                junit ".tmp/*/*/*.xml"
                                             }
                                         }
                                     }
