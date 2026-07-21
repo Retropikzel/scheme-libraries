@@ -1,6 +1,6 @@
 (define tap-output-port (current-output-port))
-(define (set-tap-runner-output-port! port)
-  (set! tap-output-port port))
+(define (set-tap-runner-output-port! port) (set! tap-output-port port))
+
 (define-syntax tap-runner
   (syntax-rules ()
     ((_)

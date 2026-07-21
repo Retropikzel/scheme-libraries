@@ -2,5 +2,7 @@
   (retropikzel debug)
   (import (scheme base)
           (scheme write))
-  (export debug)
+  (export debug
+          debug-display
+          debug-proc)
   (include "debug.scm"))

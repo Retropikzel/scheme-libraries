@@ -29,7 +29,7 @@ pipeline {
     environment {
         R6RS_SCHEMES='capyscheme chezscheme guile ikarus ironscheme loko mosh racket sagittarius ypsilon'
         R7RS_SCHEMES='capyscheme chibi chicken cyclone foment gauche gambit kawa loko meevax mosh racket sagittarius skint stklos tr7 ypsilon'
-        LIBRARIES='tap junit ctrf mouth string url-encoding leb128 hardware-info'
+        LIBRARIES='tap junit debug lambda-utils ctrf mouth string url-encoding leb128 hardware-info'
     }
 
     stages {
