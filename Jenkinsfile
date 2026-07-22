@@ -26,11 +26,12 @@ pipeline {
             agent {
                 docker {
                     image "schemers/chibi:head"
+                    user 'root'
                     reuseNode true
                 }
             }
             steps {
-                sh "sudo apt-get update && sudo apt-get install -y git ca-certificates gcc make libffi-dev"
+                sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
                 sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1"
                 sh "rake -j8 -C chibi-scheme"
                 sh "make -j8 -C chibi-scheme install"
