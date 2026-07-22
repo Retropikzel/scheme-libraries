@@ -25,7 +25,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    def config = readYaml file: 'buildconfig.yaml'
+                    def config = readYaml file: 'builds.yaml'
                     config.each { build ->
                         stage("WIP") {
                             agent {
