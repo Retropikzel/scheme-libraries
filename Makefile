@@ -77,5 +77,8 @@ retropikzel/wasm/plus.wat: retropikzel/wasm/plus.c
 	emcc -o retropikzel/wasm/plus.js retropikzel/wasm/plus.c
 	wasm-dis retropikzel/wasm/plus.wasm > retropikzel/wasm/plus.wat
 
+jenkinsfile: makings.scm
+	makings --jenkinsfile > Jenkinsfile
+
 clean:
 	git clean -X -f
