@@ -1,11 +1,6 @@
 pipeline {
     agent {
-        dockerfile {
-            label 'docker-x86_64'
-            filename 'Dockerfile.jenkins'
-            args '-t --user=root --privileged -v /var/run/docker.sock:/var/run/docker.sock'
-            reuseNode true
-        }
+        label 'docker'
     }
 
     triggers {
@@ -26,43 +21,26 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
     }
 
-    environment {
-        R6RS_SCHEMES='capyscheme chezscheme guile ikarus ironscheme loko mosh racket sagittarius ypsilon'
-        R7RS_SCHEMES='capyscheme chibi chicken cyclone foment gauche gambit kawa loko meevax mosh racket sagittarius skint stklos tr7 ypsilon'
-        LIBRARIES='tap junit debug lambda-utils ctrf mouth string url-encoding leb128 hardware-info'
-    }
-
     stages {
-        stage('Parallel') {
-            parallel {
-                stage('R6RS tests') {
-                    steps {
-                        script {
-                            env.LIBRARIES.split().each { LIBRARY ->
-                                stage("${LIBRARY}") {
-                                    env.R6RS_SCHEMES.split().each { SCHEME ->
-                                        stage("${SCHEME}") {
-                                            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                                sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r6rs test-docker"
-                                            }
-                                        }
-                                    }
+        stage('Build') {
+            steps {
+                def config = readYaml file: buildconfig.yaml
+                script {
+                    config.schemes.each { scheme ->
+                        stage("${scheme}") {
+                            agent {
+                                docker {
+                                    image "schemers/${scheme}:${scheme.docker-tag}"
                                 }
                             }
-                        }
-                    }
-                }
-                stage('R7RS tests') {
-                    steps {
-                        script {
-                            env.LIBRARIES.split().each { LIBRARY ->
-                                stage("${LIBRARY}") {
-                                    env.R7RS_SCHEMES.split().each { SCHEME ->
-                                        stage("${SCHEME}") {
-                                            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                                sh "timeout 600 make SCHEME=${SCHEME} LIBRARY=${LIBRARY} RNRS=r7rs test-docker"
-                                            }
-                                        }
+                            environment {
+                                COMPILE_R7RS="${scheme}"
+                                SCHEME="${scheme}"
+                            }
+                            scheme.stages.each { stage ->
+                                stage("${stage}") {
+                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                        sh "${stage.cmd}"
                                     }
                                 }
                             }
