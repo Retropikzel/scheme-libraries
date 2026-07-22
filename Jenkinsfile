@@ -32,15 +32,17 @@ pipeline {
             }
             steps {
                 script {
-                    files = findFiles(glob: 'makings/*.mks')
-                    files.each { file ->
-                        stage("${file}") {
+                        stage("one") {
+                            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                sh "ls"
+                            }
+                        }
+                        stage("two") {
                             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                 sh "ls"
                             }
                         }
                     }
-                }
             }
         }
     }
