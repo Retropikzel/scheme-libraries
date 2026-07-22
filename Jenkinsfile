@@ -30,7 +30,7 @@ pipeline {
                     args '--user=root'
                 }
             }
-            stages {
+            steps {
                 stage('init') {
                     steps {
                         sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
