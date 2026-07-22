@@ -22,7 +22,7 @@ pipeline {
     }
 
     stages {
-        stage('chibi') {
+        stage('Makings') {
             agent {
                 docker {
                     image "schemers/chibi:head"
