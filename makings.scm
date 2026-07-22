@@ -9,7 +9,8 @@
           (list (string-append "COMPILE_R7RS=" scheme " compile-r7rs ")))))
 
   (map (lambda (scheme)
-         `((image ,(string-append "schemers/" scheme ":head"))
+         `((name ,scheme)
+           (image ,(string-append "schemers/" scheme ":head"))
            (stages
              (init ,@init)
              (tap ,@(tap scheme)))))
