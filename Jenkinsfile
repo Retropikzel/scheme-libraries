@@ -26,7 +26,8 @@ pipeline {
           }
           stage('tap') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              sh 'COMPILE_R7RS=chibi compile-r7rs '
+              sh 'COMPILE_R7RS=chibi compile-r7rs -o tap-test-program retropikzel/tap/test.scm'
+              sh './tap-test-program'
             }
           }
         }
