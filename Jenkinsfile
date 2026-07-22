@@ -32,11 +32,11 @@ pipeline {
             }
             steps {
                 script {
-                    def config = readYAML file: 'builds.yaml'
-                    config.stages.each { item ->
-                        stage("${item.name}") {
+                    files = findFiles(glob: 'makings/*.mks')
+                    files.each { file ->
+                        stage("${file}") {
                             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                sh "${item.cmd}"
+                                sh "ls"
                             }
                         }
                     }
