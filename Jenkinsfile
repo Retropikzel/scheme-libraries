@@ -28,6 +28,7 @@ pipeline {
           }
           stage('tap') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              sh 'snow-chibi install --impls=chibi srfi.64'
               sh 'snow-chibi install --impls=chibi retropikzel.tap'
               sh 'COMPILE_R7RS=chibi compile-r7rs -o tap-test-program retropikzel/tap/test.scm'
               sh './tap-test-program'
@@ -57,6 +58,7 @@ pipeline {
           }
           stage('tap') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              sh 'snow-chibi install --impls=sagittarius srfi.64'
               sh 'snow-chibi install --impls=sagittarius retropikzel.tap'
               sh 'COMPILE_R7RS=sagittarius compile-r7rs -o tap-test-program retropikzel/tap/test.scm'
               sh './tap-test-program'
