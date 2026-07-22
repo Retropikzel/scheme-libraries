@@ -5,7 +5,13 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
   }
   stages {
-    agent { docker { image: 'schemers/chibi:head', reuseNode: true, args:'--user=root' } }
+    agent {
+      docker {
+        image 'schemers/chibi:head'
+        reuseNode true
+        args:'--user=root'
+      }
+    }
     steps {
       script {
         stage('init') {
