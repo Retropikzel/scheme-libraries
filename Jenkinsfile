@@ -25,11 +25,11 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    "chibi".split().each { scheme ->
+                    "chibi sagittarius".split().each { scheme ->
                         stage("${scheme}") {
                             agent {
                                 docker {
-                                    image "schemers/${scheme}"
+                                    image "schemers/${scheme}:head"
                                 }
                             }
                             sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
