@@ -32,6 +32,33 @@ pipeline {
         }
       }
     }
+    stage('sagittarius') {
+      agent {
+        docker {
+          image 'schemers/sagittarius:head'
+          args '--user=root'
+        }
+      }
+      steps {
+        script {
+          stage('init') {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
+              sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1'
+              sh 'make -j8 -C chibi-scheme'
+              sh 'make -j8 -C chibi-scheme install'
+              sh 'snow-chibi install retropikzel.compile-r7rs'
+            }
+          }
+          stage('tap') {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              sh 'COMPILE_R7RS=sagittarius compile-r7rs -o tap-test-program retropikzel/tap/test.scm'
+              sh './tap-test-program'
+            }
+          }
+        }
+      }
+    }
   }
   post {
     always {

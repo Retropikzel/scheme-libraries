@@ -12,10 +12,10 @@
                            " compile-r7rs -o tap-test-program retropikzel/tap/test.scm")
             "./tap-test-program"))))
 
-  (map (lambda (scheme)
-         `(makings ((name ,scheme)
-                     (image ,(string-append "schemers/" scheme ":head"))
-                     (stages
-                       (init ,@init)
-                       (tap ,@(tap scheme))))))
-       '("chibi" "sagittarius")))
+  `((makings ,@(map (lambda (scheme)
+                      `((name ,scheme)
+                        (image ,(string-append "schemers/" scheme ":head"))
+                        (stages
+                          (init ,@init)
+                          (tap ,@(tap scheme)))))
+                    '("chibi" "sagittarius")))))
