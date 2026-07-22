@@ -25,7 +25,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    def config = readYaml file: 'builds.yaml'
+                    def config = readJSONfile: 'builds.json'
                     config.builds.each { build ->
                         stage("${build.name}") {
                             agent {
@@ -33,7 +33,6 @@ pipeline {
                                     image "${build.image}"
                                 }
                             }
-                            /*
                             build.stages.each { stage ->
                                 stage("${stage.name}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
@@ -41,7 +40,6 @@ pipeline {
                                     }
                                 }
                             }
-                            */
                         }
                     }
                 }
