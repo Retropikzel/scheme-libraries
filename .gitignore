@@ -26,3 +26,4 @@ venv*
 retropikzel/wasm/plus.sld
 retropikzel/*.c
 retropikzel/*.meta
+!builds.json
