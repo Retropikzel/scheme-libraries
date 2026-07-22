@@ -26,15 +26,15 @@ pipeline {
             steps {
                 script {
                     def config = readYaml file: 'builds.yaml'
-                    config.each { build ->
-                        stage("WIP") {
+                    config.builds.each { build ->
+                        stage("${build.name}") {
                             agent {
                                 docker {
                                     image "${build.image}"
                                 }
                             }
                             config.stages.each { stage ->
-                                stage("WIP") {
+                                stage("${stage.name}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "${stage.cmd}"
                                     }
