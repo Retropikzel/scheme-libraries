@@ -40,7 +40,7 @@ pipeline {
                     "tap debug".split().each { library ->
                         stage("${library}") {
                             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                sh "make SCHEME=${scheme} LIBRARY=${library} all install test"
+                                sh "make SCHEME=chibi LIBRARY=${library} all install test"
                             }
                         }
                     }
