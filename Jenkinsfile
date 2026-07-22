@@ -10,7 +10,7 @@ pipeline {
         docker {
           image 'schemers/chibi:head'
           reuseNode true
-          args:'--user=root'
+          args '--user=root'
         }
       }
       steps {
