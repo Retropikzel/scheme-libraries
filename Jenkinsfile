@@ -28,15 +28,15 @@ pipeline {
                 script {
                     def config = readYaml file: 'buildconfig.yaml'
                     config.schemes.each { scheme ->
-                        stage("${scheme}") {
+                        stage("${scheme.name}") {
                             agent {
                                 docker {
                                     image "schemers/${scheme}:${scheme.docker-tag}"
                                 }
                             }
                             environment {
-                                COMPILE_R7RS="${scheme}"
-                                SCHEME="${scheme}"
+                                COMPILE_R7RS="${scheme.scheme}"
+                                SCHEME="${scheme.scheme}"
                             }
                             scheme.stages.each { stage ->
                                 stage("${stage}") {
