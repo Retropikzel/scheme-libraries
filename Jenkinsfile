@@ -26,8 +26,8 @@ pipeline {
             agent {
                 docker {
                     image "schemers/chibi:head"
-                    user 'root'
                     reuseNode true
+                    args '--user=root'
                 }
             }
             steps {
