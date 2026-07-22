@@ -1,7 +1,3 @@
-node {
-    def config = readYaml file: "buildconfig.yaml"
-}
-
 pipeline {
     agent {
         label 'docker-x86_64'
@@ -29,6 +25,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
+                def config = readYaml file: "buildconfig.yaml"
                 script {
                     config.schemes.each { scheme ->
                         stage("${scheme}") {
