@@ -25,21 +25,23 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    def config = readJSON file: 'builds.json'
-                    config['builds'].each { build ->
-                        stage("${build['name']}") {
+                    def config = readYaml file: 'builds.yaml'
+                    config.builds.each { build ->
+                        stage("${build.name}") {
                             agent {
                                 docker {
-                                    image "${build['image']}"
+                                    image "${build.image}"
                                 }
                             }
-                            build['stages'].each { stage ->
-                                stage("${stage['name']}") {
+                            /*
+                            build.stages.each { stage ->
+                                stage("${stage.name}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                        sh "${stage['cmd']}"
+                                        sh "${stage.cmd}"
                                     }
                                 }
                             }
+                            */
                         }
                     }
                 }
