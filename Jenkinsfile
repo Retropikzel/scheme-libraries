@@ -1,7 +1,5 @@
 pipeline {
-  agent {
-      label 'agent1'
-  }
+  agent any
   options {
     disableConcurrentBuilds()
     buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
@@ -28,10 +26,7 @@ pipeline {
           }
           stage('tap') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              sh 'snow-chibi install --impls=chibi srfi.64'
-              sh 'snow-chibi install --impls=chibi retropikzel.tap'
-              sh 'COMPILE_R7RS=chibi compile-r7rs -o tap-test-program retropikzel/tap/test.scm'
-              sh './tap-test-program'
+              sh 'make SCHEME=chibi LIBRARY=tap all install test'
             }
           }
         }
@@ -58,10 +53,7 @@ pipeline {
           }
           stage('tap') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              sh 'snow-chibi install --impls=sagittarius srfi.64'
-              sh 'snow-chibi install --impls=sagittarius retropikzel.tap'
-              sh 'COMPILE_R7RS=sagittarius compile-r7rs -o tap-test-program retropikzel/tap/test.scm'
-              sh './tap-test-program'
+              sh 'make SCHEME=sagittarius LIBRARY=tap all install test'
             }
           }
         }

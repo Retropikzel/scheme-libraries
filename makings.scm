@@ -6,12 +6,7 @@
           "snow-chibi install retropikzel.compile-r7rs"))
       (tap
         (lambda (scheme)
-          `(,(string-append "snow-chibi install --impls=" scheme " srfi.64")
-            ,(string-append "snow-chibi install --impls=" scheme " retropikzel.tap")
-            ,(string-append "COMPILE_R7RS="
-                           scheme
-                           " compile-r7rs -o tap-test-program retropikzel/tap/test.scm")
-            "./tap-test-program"))))
+          (list (string-append "make SCHEME=" scheme " LIBRARY=tap all install test")))))
 
   `((makings ,@(map (lambda (scheme)
                       `((name ,scheme)
