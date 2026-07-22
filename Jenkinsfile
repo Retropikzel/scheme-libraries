@@ -38,10 +38,12 @@ pipeline {
                         sh "snow-chibi install retropikzel.compile-r7rs"
                 }
             }
-            "tap debug".split().each { library ->
-                stage("${library}") {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        sh "make SCHEME=${scheme} LIBRARY=${library} all install test"
+            script {
+                "tap debug".split().each { library ->
+                    stage("${library}") {
+                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                            sh "make SCHEME=${scheme} LIBRARY=${library} all install test"
+                        }
                     }
                 }
             }
