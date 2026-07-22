@@ -22,32 +22,26 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
+        stage('chibi') {
+            agent {
+                docker {
+                    image "schemers/chibi:head"
+                    reuseNode true
+                }
+            }
             steps {
-                script {
-                    "chibi sagittarius".split().each { scheme ->
-                        stage("${scheme}") {
-                            agent {
-                                docker {
-                                    image "schemers/${scheme}:head"
-                                    reuseNode true
-                                }
-                            }
-                            sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
-                            sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1"
-                            sh "rake -j8 -C chibi-scheme"
-                            sh "make -j8 -C chibi-scheme install"
-                            sh "snow-chibi install retropikzel.compile-r7rs"
-                            "tap debug".split().each { library ->
-                                stage("${library}") {
-                                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                        sh "make SCHEME=${scheme} LIBRARY=${library} all install test"
-                                    }
-                                }
+                sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
+                    sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1"
+                    sh "rake -j8 -C chibi-scheme"
+                    sh "make -j8 -C chibi-scheme install"
+                    sh "snow-chibi install retropikzel.compile-r7rs"
+                    "tap debug".split().each { library ->
+                        stage("${library}") {
+                            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                sh "make SCHEME=${scheme} LIBRARY=${library} all install test"
                             }
                         }
                     }
-                }
             }
         }
     }
