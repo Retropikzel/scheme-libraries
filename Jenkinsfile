@@ -25,7 +25,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    def config = readJSONfile: 'builds.json'
+                    def config = readJSON file: 'builds.json'
                     config.builds.each { build ->
                         stage("${build.name}") {
                             agent {
