@@ -37,7 +37,7 @@ pipeline {
                 sh "make -j8 -C chibi-scheme install"
                 sh "snow-chibi install retropikzel.compile-r7rs"
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    sh "make SCHEME=chibi LIBRARY= all install test"
+                    sh "make SCHEME=chibi LIBRARY=tap all install test"
                 }
             }
         }
