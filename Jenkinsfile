@@ -29,7 +29,7 @@ pipeline {
         steps {
             script {
                 env.BUILDS.split().each { build ->
-                    stage('${build}') {
+                    stage("${build}") {
                         agent {
                             docker {
                                 image "schemers/chibi:head"
