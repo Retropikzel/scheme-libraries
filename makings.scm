@@ -18,4 +18,4 @@
                      (stages
                        (init ,@init)
                        (tap ,@(tap scheme))))))
-       '("chibi")))
+       '("chibi" "sagittarius")))
