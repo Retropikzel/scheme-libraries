@@ -25,18 +25,22 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    def config = readYaml file: 'builds.yaml'
-                    config.builds.each { build ->
-                        stage("${build.name}") {
+                    "chibi".split().each { scheme ->
+                        stage("${scheme}") {
                             agent {
                                 docker {
-                                    image "${build.image}"
+                                    image "schemers/${scheme}"
                                 }
                             }
-                            build.stages.each { stage ->
-                                stage("${stage.name}") {
+                            sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
+                            sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1"
+                            sh "rake -j8 -C chibi-scheme"
+                            sh "make -j8 -C chibi-scheme install"
+                            sh "snow-chibi install retropikzel.compile-r7rs"
+                            "tap".split().each { library ->
+                                stage("${library}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                        sh "${stage.cmd}"
+                                        sh "make SCHEME=${scheme} LIBRARY=${library} all install test"
                                     }
                                 }
                             }
