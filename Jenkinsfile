@@ -1,3 +1,7 @@
+node {
+    def config = readYaml file: "buildconfig.yaml"
+}
+
 pipeline {
     agent {
         label 'docker-x86_64'
@@ -21,9 +25,6 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
     }
 
-    node {
-        def config = readYaml file: "buildconfig.yaml"
-    }
 
     stages {
         stage('Build') {
