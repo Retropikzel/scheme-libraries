@@ -30,7 +30,7 @@ pipeline {
                         stage("${build.name}") {
                             agent {
                                 docker {
-                                    image "build.image"
+                                    image "${build.image}"
                                 }
                             }
                             build.stages.each { stage ->
