@@ -6,8 +6,8 @@
           "snow-chibi install retropikzel.compile-r7rs"))
       (tap
         (lambda (scheme)
-          (list
-            (string-append "COMPILE_R7RS="
+          `("snow-chibi install retropikzel.tap"
+            ,(string-append "COMPILE_R7RS="
                            scheme
                            " compile-r7rs -o tap-test-program retropikzel/tap/test.scm")
             "./tap-test-program"))))
