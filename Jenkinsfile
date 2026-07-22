@@ -37,7 +37,7 @@ pipeline {
                             sh "rake -j8 -C chibi-scheme"
                             sh "make -j8 -C chibi-scheme install"
                             sh "snow-chibi install retropikzel.compile-r7rs"
-                            "tap".split().each { library ->
+                            "tap debug".split().each { library ->
                                 stage("${library}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "make SCHEME=${scheme} LIBRARY=${library} all install test"
