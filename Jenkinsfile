@@ -24,8 +24,8 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                def config = readYaml file: buildconfig.yaml
                 script {
+                    def config = readYaml file: buildconfig.yaml
                     config.schemes.each { scheme ->
                         stage("${scheme}") {
                             agent {
