@@ -33,7 +33,7 @@ pipeline {
                                     image "${build.image}"
                                 }
                             }
-                            config.stages.each { stage ->
+                            build.stages.each { stage ->
                                 stage("${stage.name}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "${stage.cmd}"
