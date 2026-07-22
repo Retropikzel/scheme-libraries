@@ -30,6 +30,7 @@ pipeline {
                             agent {
                                 docker {
                                     image "schemers/${scheme}:head"
+                                    reuseNode true
                                 }
                             }
                             sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
