@@ -13,9 +13,9 @@
             "./tap-test-program"))))
 
   (map (lambda (scheme)
-         `((name ,scheme)
-           (image ,(string-append "schemers/" scheme ":head"))
-           (stages
-             (init ,@init)
-             (tap ,@(tap scheme)))))
+         `(makings ((name ,scheme)
+                     (image ,(string-append "schemers/" scheme ":head"))
+                     (stages
+                       (init ,@init)
+                       (tap ,@(tap scheme))))))
        '("chibi")))
