@@ -33,6 +33,7 @@ pipeline {
                                     image "${build.image}"
                                 }
                             }
+                            /*
                             build.stages.each { stage ->
                                 stage("${stage.name}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
@@ -40,6 +41,7 @@ pipeline {
                                     }
                                 }
                             }
+                            */
                         }
                     }
                 }
