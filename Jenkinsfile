@@ -21,7 +21,9 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
     }
 
-    def config = readYaml file: "buildconfig.yaml"
+    node {
+        def config = readYaml file: "buildconfig.yaml"
+    }
 
     stages {
         stage('Build') {
