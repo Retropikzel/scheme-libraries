@@ -21,25 +21,20 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
     }
 
-
     stages {
         stage('Build') {
             steps {
                 script {
-                    def config = readYaml file: 'buildconfig.yaml'
-                    config.schemes.each { scheme ->
-                        stage("${scheme.name}") {
+                    def builds = readYaml file: 'buildconfig.yaml'
+                    builds.each { build ->
+                        stage("${build.name}") {
                             agent {
                                 docker {
-                                    image "schemers/${scheme}:${scheme.docker-tag}"
+                                    image "build.image"
                                 }
                             }
-                            environment {
-                                COMPILE_R7RS="${scheme.scheme}"
-                                SCHEME="${scheme.scheme}"
-                            }
-                            scheme.stages.each { stage ->
-                                stage("${stage}") {
+                            build.stages.each { stage ->
+                                stage("${stage.name}") {
                                     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                         sh "${stage.cmd}"
                                     }
@@ -51,6 +46,7 @@ pipeline {
             }
         }
     }
+
     post {
         always {
             cleanWs()
