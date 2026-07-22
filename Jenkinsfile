@@ -40,7 +40,7 @@ pipeline {
                     snow-chibi install retropikzel.compile-r7rs
                     make SCHEME=chibi LIBRARY=tap all install test
                     '''.split("\n").each { cmd ->
-                        stage("${cmd}") {
+                        stage("wip") {
                             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                 sh "${cmd}"
                             }
