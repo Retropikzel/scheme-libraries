@@ -5,16 +5,16 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
   }
   stages {
-    agent {
-      docker {
-        image 'schemers/chibi:head'
-        reuseNode true
-        args:'--user=root'
-      }
-    }
     steps {
       script {
         stage('init') {
+          agent {
+            docker {
+             image 'schemers/chibi:head'
+              reuseNode true
+              args:'--user=root'
+            }
+          }
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
             sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
             sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1'
@@ -24,6 +24,13 @@ pipeline {
           }
         }
         stage('tap') {
+          agent {
+            docker {
+             image 'schemers/chibi:head'
+              reuseNode true
+              args:'--user=root'
+            }
+          }
           catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
             sh 'COMPILE_R7RS=chibi compile-r7rs '
           }
