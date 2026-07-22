@@ -17,7 +17,7 @@ pipeline {
           stage('init') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
-              sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1'
+              sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
               sh 'make -j8 -C chibi-scheme'
               sh 'make -j8 -C chibi-scheme install'
               sh 'snow-chibi install retropikzel.compile-r7rs'
@@ -44,7 +44,7 @@ pipeline {
           stage('init') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
-              sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1'
+              sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
               sh 'make -j8 -C chibi-scheme'
               sh 'make -j8 -C chibi-scheme install'
               sh 'snow-chibi install retropikzel.compile-r7rs'
@@ -58,11 +58,6 @@ pipeline {
           }
         }
       }
-    }
-  }
-  post {
-    always {
-      cleanWs()
     }
   }
 }
