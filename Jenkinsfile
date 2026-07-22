@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+      label 'agent1'
+  }
   options {
     disableConcurrentBuilds()
     buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
@@ -9,6 +11,7 @@ pipeline {
       agent {
         docker {
           image 'schemers/chibi:head'
+          reuseNode true
           args '--user=root'
         }
       }
@@ -37,6 +40,7 @@ pipeline {
       agent {
         docker {
           image 'schemers/sagittarius:head'
+          reuseNode true
           args '--user=root'
         }
       }
