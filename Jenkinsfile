@@ -31,6 +31,11 @@ pipeline {
               sh 'make SCHEME=chibi LIBRARY=tap all install test'
             }
           }
+          stage('debug') {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              sh 'make SCHEME=chibi LIBRARY=debug all install test'
+            }
+          }
         }
       }
     }
@@ -56,6 +61,11 @@ pipeline {
           stage('tap') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'make SCHEME=sagittarius LIBRARY=tap all install test'
+            }
+          }
+          stage('debug') {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+              sh 'make SCHEME=sagittarius LIBRARY=debug all install test'
             }
           }
         }

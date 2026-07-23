@@ -4,9 +4,14 @@
           "make -j8 -C chibi-scheme"
           "make -j8 -C chibi-scheme install"
           "snow-chibi install retropikzel.compile-r7rs"))
-      (tap
-        (lambda (scheme)
-          (list (string-append "make SCHEME=" scheme " LIBRARY=tap all install test")))))
+      (library-stage
+        (lambda (scheme library-name)
+          (list (string->symbol library-name)
+                (string-append "make SCHEME="
+                               scheme
+                               " LIBRARY="
+                               library-name
+                               " all install test")))))
 
   `((jenkinsfile
       (agent "label 'docker-x86_64'")
@@ -17,5 +22,8 @@
                         (image ,(string-append "schemers/" scheme ":head"))
                         (stages
                           (init ,@init)
-                          (tap ,@(tap scheme)))))
+                          ,@(map
+                              (lambda (library-name)
+                                (library-stage scheme library-name))
+                              '("tap" "debug")))))
                     '("chibi" "sagittarius")))))
