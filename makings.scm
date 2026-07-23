@@ -1,5 +1,5 @@
 (let ((schemes
-        '("capyscheme" "chibi" "chicken" "cyclone" "foment" "gauche" "kawa"
+        '("capyscheme" "chibi" "chicken" "foment" "gauche" "kawa"
           "loko" "meevax" "mit-scheme" "mosh" "racket" "sagittarius" "skint"
           "stklos" "tr7" "ypsilon"))
       (libraries

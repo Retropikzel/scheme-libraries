@@ -49,20 +49,6 @@ pipeline {
         }
       }
     }
-    stage('cyclone') {
-      agent {
-        docker {
-          image 'schemers/cyclone:head'
-          reuseNode true
-          args '--user=root'
-        }
-      }
-      steps {
-        script {
-          get_cyclone_stages()
-        }
-      }
-    }
     stage('foment') {
       agent {
         docker {
@@ -360,45 +346,6 @@ def get_chicken_stages() {
   stages.plus(stage('lambda-utils') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh "make SCHEME=chicken LIBRARY=lambda-utils all install test"
-    }
-  })
-  return stages
-}
-
-def get_cyclone_stages() {
-  def stages = []
-  stages.plus(stage('init') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
-      sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
-      sh "make -j8 -C chibi-scheme"
-      sh "make -j8 -C chibi-scheme install"
-      sh "snow-chibi install --always-yes retropikzel.compile-r7rs"
-    }
-  })
-  stages.plus(stage('tap') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "make SCHEME=cyclone LIBRARY=tap all install test"
-    }
-  })
-  stages.plus(stage('mouth') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "make SCHEME=cyclone LIBRARY=mouth all install test"
-    }
-  })
-  stages.plus(stage('debug') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "make SCHEME=cyclone LIBRARY=debug all install test"
-    }
-  })
-  stages.plus(stage('hardware-info') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "make SCHEME=cyclone LIBRARY=hardware-info all install test"
-    }
-  })
-  stages.plus(stage('lambda-utils') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "make SCHEME=cyclone LIBRARY=lambda-utils all install test"
     }
   })
   return stages
