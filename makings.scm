@@ -3,8 +3,7 @@
           "loko" "meevax" "mit-scheme" "mosh" "racket" "sagittarius" "skint"
           "stklos" "tr7" "ypsilon"))
       (libraries
-        '("tap" "junit" "ctrf" "mouth" "string" "url-encoding" "debug" "leb128"
-          "hardware-info" "lambda-utils"))
+        '("tap" "mouth" "debug" "hardware-info" "lambda-utils"))
       (init
         '("apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
           "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"

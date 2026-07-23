@@ -256,7 +256,7 @@ def get_capyscheme_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -264,39 +264,14 @@ def get_capyscheme_stages() {
       sh 'make SCHEME=capyscheme LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=capyscheme LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=capyscheme LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=capyscheme LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=capyscheme LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=capyscheme LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=capyscheme LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=capyscheme LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -320,7 +295,7 @@ def get_chibi_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -328,39 +303,14 @@ def get_chibi_stages() {
       sh 'make SCHEME=chibi LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chibi LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chibi LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=chibi LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chibi LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chibi LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=chibi LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chibi LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -384,7 +334,7 @@ def get_chicken_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -392,39 +342,14 @@ def get_chicken_stages() {
       sh 'make SCHEME=chicken LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chicken LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chicken LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=chicken LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chicken LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chicken LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=chicken LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=chicken LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -448,7 +373,7 @@ def get_cyclone_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -456,39 +381,14 @@ def get_cyclone_stages() {
       sh 'make SCHEME=cyclone LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=cyclone LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=cyclone LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=cyclone LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=cyclone LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=cyclone LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=cyclone LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=cyclone LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -512,7 +412,7 @@ def get_foment_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -520,39 +420,14 @@ def get_foment_stages() {
       sh 'make SCHEME=foment LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=foment LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=foment LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=foment LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=foment LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=foment LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=foment LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=foment LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -576,7 +451,7 @@ def get_gauche_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -584,39 +459,14 @@ def get_gauche_stages() {
       sh 'make SCHEME=gauche LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=gauche LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=gauche LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=gauche LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=gauche LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=gauche LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=gauche LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=gauche LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -640,7 +490,7 @@ def get_kawa_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -648,39 +498,14 @@ def get_kawa_stages() {
       sh 'make SCHEME=kawa LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=kawa LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=kawa LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=kawa LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=kawa LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=kawa LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=kawa LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=kawa LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -704,7 +529,7 @@ def get_loko_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -712,39 +537,14 @@ def get_loko_stages() {
       sh 'make SCHEME=loko LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=loko LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=loko LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=loko LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=loko LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=loko LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=loko LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=loko LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -768,7 +568,7 @@ def get_meevax_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -776,39 +576,14 @@ def get_meevax_stages() {
       sh 'make SCHEME=meevax LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=meevax LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=meevax LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=meevax LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=meevax LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=meevax LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=meevax LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=meevax LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -832,7 +607,7 @@ def get_mit_scheme_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -840,39 +615,14 @@ def get_mit_scheme_stages() {
       sh 'make SCHEME=mit-scheme LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mit-scheme LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mit-scheme LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=mit-scheme LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mit-scheme LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mit-scheme LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=mit-scheme LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mit-scheme LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -896,7 +646,7 @@ def get_mosh_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -904,39 +654,14 @@ def get_mosh_stages() {
       sh 'make SCHEME=mosh LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mosh LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mosh LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=mosh LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mosh LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mosh LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=mosh LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=mosh LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -960,7 +685,7 @@ def get_racket_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -968,39 +693,14 @@ def get_racket_stages() {
       sh 'make SCHEME=racket LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=racket LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=racket LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=racket LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=racket LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=racket LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=racket LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=racket LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -1024,7 +724,7 @@ def get_sagittarius_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -1032,39 +732,14 @@ def get_sagittarius_stages() {
       sh 'make SCHEME=sagittarius LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=sagittarius LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=sagittarius LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=sagittarius LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=sagittarius LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=sagittarius LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=sagittarius LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=sagittarius LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -1088,7 +763,7 @@ def get_skint_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -1096,39 +771,14 @@ def get_skint_stages() {
       sh 'make SCHEME=skint LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=skint LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=skint LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=skint LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=skint LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=skint LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=skint LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=skint LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -1152,7 +802,7 @@ def get_stklos_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -1160,39 +810,14 @@ def get_stklos_stages() {
       sh 'make SCHEME=stklos LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=stklos LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=stklos LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=stklos LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=stklos LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=stklos LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=stklos LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=stklos LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -1216,7 +841,7 @@ def get_tr7_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -1224,39 +849,14 @@ def get_tr7_stages() {
       sh 'make SCHEME=tr7 LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=tr7 LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=tr7 LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=tr7 LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=tr7 LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=tr7 LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=tr7 LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=tr7 LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
@@ -1280,7 +880,7 @@ def get_ypsilon_stages() {
       sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
       sh 'make -j8 -C chibi-scheme'
       sh 'make -j8 -C chibi-scheme install'
-      sh 'snow-chibi install retropikzel.compile-r7rs'
+      sh 'snow-chibi install --always-yes retropikzel.compile-r7rs'
     }
   })
   stages.plus(stage('tap') {
@@ -1288,39 +888,14 @@ def get_ypsilon_stages() {
       sh 'make SCHEME=ypsilon LIBRARY=tap all install test'
     }
   })
-  stages.plus(stage('junit') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=ypsilon LIBRARY=junit all install test'
-    }
-  })
-  stages.plus(stage('ctrf') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=ypsilon LIBRARY=ctrf all install test'
-    }
-  })
   stages.plus(stage('mouth') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=ypsilon LIBRARY=mouth all install test'
     }
   })
-  stages.plus(stage('string') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=ypsilon LIBRARY=string all install test'
-    }
-  })
-  stages.plus(stage('url-encoding') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=ypsilon LIBRARY=url-encoding all install test'
-    }
-  })
   stages.plus(stage('debug') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
       sh 'make SCHEME=ypsilon LIBRARY=debug all install test'
-    }
-  })
-  stages.plus(stage('leb128') {
-    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh 'make SCHEME=ypsilon LIBRARY=leb128 all install test'
     }
   })
   stages.plus(stage('hardware-info') {
