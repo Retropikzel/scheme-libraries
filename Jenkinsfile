@@ -143,7 +143,7 @@ pipeline {
       }
       steps {
         script {
-          get_mit-scheme_stages()
+          get_mit_scheme_stages()
         }
       }
     }
@@ -824,7 +824,7 @@ def get_meevax_stages() {
   return stages
 }
 
-def get_mit-scheme_stages() {
+def get_mit_scheme_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
