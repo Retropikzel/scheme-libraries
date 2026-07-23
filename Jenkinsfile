@@ -41,8 +41,8 @@ pipeline {
 }
 
 def get_chibi_stages() {
-  return {
-          stage('init') {
+  def stages = []
+          stages['init'] = stage('init') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
               sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
@@ -51,22 +51,22 @@ def get_chibi_stages() {
               sh 'snow-chibi install retropikzel.compile-r7rs'
             }
           }
-          stage('tap') {
+          stages['tap'] = stage('tap') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'make SCHEME=chibi LIBRARY=tap all install test'
             }
           }
-          stage('debug') {
+          stages['debug'] = stage('debug') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'make SCHEME=chibi LIBRARY=debug all install test'
             }
           }
-  }
+  return stages
 }
 
 def get_sagittarius_stages() {
-  return {
-          stage('init') {
+  def stages = []
+          stages['init'] = stage('init') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
               sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
@@ -75,16 +75,16 @@ def get_sagittarius_stages() {
               sh 'snow-chibi install retropikzel.compile-r7rs'
             }
           }
-          stage('tap') {
+          stages['tap'] = stage('tap') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'make SCHEME=sagittarius LIBRARY=tap all install test'
             }
           }
-          stage('debug') {
+          stages['debug'] = stage('debug') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'make SCHEME=sagittarius LIBRARY=debug all install test'
             }
           }
-  }
+  return stages
 }
 
