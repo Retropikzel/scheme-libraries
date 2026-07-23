@@ -5,8 +5,7 @@
       (libraries
         '("tap" "mouth" "debug" "hardware-info" "lambda-utils"))
       (init
-        '("echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
-          "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
+        '("apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
           "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
           "make -j8 -C chibi-scheme"
           "make -j8 -C chibi-scheme install"
