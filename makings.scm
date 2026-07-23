@@ -13,7 +13,7 @@
       (library-stage
         (lambda (scheme library-name)
           (list (string->symbol library-name)
-                (string-append "make SCHEME="
+                (string-append "timeout 60 make SCHEME="
                                scheme
                                " LIBRARY="
                                library-name
