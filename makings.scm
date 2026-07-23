@@ -8,7 +8,11 @@
         (lambda (scheme)
           (list (string-append "make SCHEME=" scheme " LIBRARY=tap all install test")))))
 
-  `((makings ,@(map (lambda (scheme)
+  `((jenkinsfile
+      (agent "label 'docker-x86_64'")
+      (options "disableConcurrentBuilds()"
+               "buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))"))
+    (makings ,@(map (lambda (scheme)
                       `((name ,scheme)
                         (image ,(string-append "schemers/" scheme ":head"))
                         (stages
