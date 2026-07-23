@@ -17,8 +17,7 @@ pipeline {
       }
       steps {
         script {
-          def stages = get_chibi_stages()
-          parallel stages
+          get_chibi_stages()
         }
       }
     }
@@ -32,8 +31,7 @@ pipeline {
       }
       steps {
         script {
-          def stages = get_sagittarius_stages()
-          parallel stages
+          get_sagittarius_stages()
         }
       }
     }
@@ -42,49 +40,49 @@ pipeline {
 
 def get_chibi_stages() {
   def stages = []
-          stages.plus(stage('init') {
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
-              sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
-              sh 'make -j8 -C chibi-scheme'
-              sh 'make -j8 -C chibi-scheme install'
-              sh 'snow-chibi install retropikzel.compile-r7rs'
-            }
-          })
-          stages.plus(stage('tap') {
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              sh 'make SCHEME=chibi LIBRARY=tap all install test'
-            }
-          })
-          stages.plus(stage('debug') {
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              sh 'make SCHEME=chibi LIBRARY=debug all install test'
-            }
-          })
+  stages.plus(stage('init') {
+    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+      sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
+      sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
+      sh 'make -j8 -C chibi-scheme'
+      sh 'make -j8 -C chibi-scheme install'
+      sh 'snow-chibi install retropikzel.compile-r7rs'
+    }
+  })
+  stages.plus(stage('tap') {
+    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+      sh 'make SCHEME=chibi LIBRARY=tap all install test'
+    }
+  })
+  stages.plus(stage('debug') {
+    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+      sh 'make SCHEME=chibi LIBRARY=debug all install test'
+    }
+  })
   return stages
 }
 
 def get_sagittarius_stages() {
   def stages = []
-          stages.plus(stage('init') {
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
-              sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
-              sh 'make -j8 -C chibi-scheme'
-              sh 'make -j8 -C chibi-scheme install'
-              sh 'snow-chibi install retropikzel.compile-r7rs'
-            }
-          })
-          stages.plus(stage('tap') {
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              sh 'make SCHEME=sagittarius LIBRARY=tap all install test'
-            }
-          })
-          stages.plus(stage('debug') {
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-              sh 'make SCHEME=sagittarius LIBRARY=debug all install test'
-            }
-          })
+  stages.plus(stage('init') {
+    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+      sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
+      sh 'git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true'
+      sh 'make -j8 -C chibi-scheme'
+      sh 'make -j8 -C chibi-scheme install'
+      sh 'snow-chibi install retropikzel.compile-r7rs'
+    }
+  })
+  stages.plus(stage('tap') {
+    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+      sh 'make SCHEME=sagittarius LIBRARY=tap all install test'
+    }
+  })
+  stages.plus(stage('debug') {
+    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+      sh 'make SCHEME=sagittarius LIBRARY=debug all install test'
+    }
+  })
   return stages
 }
 
