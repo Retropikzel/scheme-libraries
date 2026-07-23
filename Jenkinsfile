@@ -252,7 +252,7 @@ def get_capyscheme_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -292,7 +292,7 @@ def get_chibi_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -332,7 +332,7 @@ def get_chicken_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -372,7 +372,7 @@ def get_cyclone_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -412,7 +412,7 @@ def get_foment_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -452,7 +452,7 @@ def get_gauche_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -492,7 +492,7 @@ def get_kawa_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -532,7 +532,7 @@ def get_loko_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -572,7 +572,7 @@ def get_meevax_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -612,7 +612,7 @@ def get_mit_scheme_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -652,7 +652,7 @@ def get_mosh_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -692,7 +692,7 @@ def get_racket_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -732,7 +732,7 @@ def get_sagittarius_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -772,7 +772,7 @@ def get_skint_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -812,7 +812,7 @@ def get_stklos_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -852,7 +852,7 @@ def get_tr7_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
@@ -892,7 +892,7 @@ def get_ypsilon_stages() {
   def stages = []
   stages.plus(stage('init') {
     catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-      sh "echo 'deb https://mirror.hetzner.com/debian/packages  trixie           main contrib' > /etc/apt/sources.list"
+      sh "echo 'deb https://mirror.hetzner.com/debian/packages trixie main contrib' > /etc/apt/sources.list.d/debian.sources"
       sh "apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
       sh "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
       sh "make -j8 -C chibi-scheme"
