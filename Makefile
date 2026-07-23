@@ -51,7 +51,7 @@ package: retropikzel/${LIBRARY}/LICENSE retropikzel/${LIBRARY}/VERSION retropikz
 ${PKG}: package
 
 install:
-	snow-chibi install --impls=${SCHEME} ${PKG}
+	snow-chibi install --impls=${SCHEME} --always-yes ${PKG}
 
 testfiles: ${PKG} ${TESTFILE}
 	rm -rf ${tmpdir}

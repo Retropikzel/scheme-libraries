@@ -10,7 +10,7 @@
           "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
           "make -j8 -C chibi-scheme"
           "make -j8 -C chibi-scheme install"
-          "snow-chibi install retropikzel.compile-r7rs"))
+          "snow-chibi install --always-yes retropikzel.compile-r7rs"))
       (library-stage
         (lambda (scheme library-name)
           (list (string->symbol library-name)
