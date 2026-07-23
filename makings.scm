@@ -1,10 +1,8 @@
-(let ((schemes '("chibi" "sagittarius"))
-      #;(schemes
+(let ((schemes
         '("capyscheme" "chibi" "chicken" "cyclone" "foment" "gauche" "kawa"
           "loko" "meevax" "mit-scheme" "mosh" "racket" "sagittarius" "skint"
           "stklos" "tr7" "ypsilon"))
-      (libraries '("tap" "debug"))
-      #;(libraries
+      (libraries
         '("tap" "junit" "ctrf" "mouth" "string" "url-encoding" "debug" "leb128"
           "hardware-info" "lambda-utils"))
       (init
