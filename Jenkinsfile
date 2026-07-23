@@ -39,7 +39,7 @@ pipeline {
 }
 
 def get_chibi_stages() {
-  return [
+  return {
           stage('init') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
@@ -59,11 +59,11 @@ def get_chibi_stages() {
               sh 'make SCHEME=chibi LIBRARY=debug all install test'
             }
           }
-  ]
+  }
 }
 
 def get_sagittarius_stages() {
-  return [
+  return {
           stage('init') {
             catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
               sh 'apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev'
@@ -83,6 +83,6 @@ def get_sagittarius_stages() {
               sh 'make SCHEME=sagittarius LIBRARY=debug all install test'
             }
           }
-  ]
+  }
 }
 
