@@ -1,4 +1,11 @@
-(let ((init
+(let ((schemes
+        '("capyscheme" "chibi" "chicken" "cyclone" "sagittarius" "foment"
+          "gauche" "kawa" "loko" "meevax" "mit-scheme" "mosh" "racket"
+          "sagittarius" "skint" "stklos" "tr7" "ypsilon"))
+      (libraries
+        '("tap" "junit" "ctrf" "mouth" "string" "url-encoding" "debug" "leb128"
+          "hardware-info" "lambda-utils"))
+      (init
         '("apt-get update && apt-get install -y git ca-certificates gcc make libffi-dev"
           "git clone https://github.com/ashinn/chibi-scheme.git --depth=1 || true"
           "make -j8 -C chibi-scheme"
@@ -25,5 +32,5 @@
                           ,@(map
                               (lambda (library-name)
                                 (library-stage scheme library-name))
-                              '("tap" "debug")))))
-                    '("chibi" "sagittarius")))))
+                              libraries))))
+                    schemes))))
