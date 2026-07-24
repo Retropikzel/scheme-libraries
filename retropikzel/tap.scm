@@ -37,6 +37,9 @@
        (test-runner-on-group-begin!
          runner
          (lambda (runner suite-name count)
+           (when (not started?)
+             (println "TAP version 14")
+             (set! started? #t))
            (set! current-test-group-count 0)
            (when current-suite-name
              (println "# Subtest: " suite-name)
@@ -60,9 +63,6 @@
        (test-runner-on-test-begin!
          runner
          (lambda (runner)
-           (when (not started?)
-             (println "TAP version 14")
-             (set! started? #t))
            (set! current-test-group-count (+ current-test-group-count 1))))
 
        (test-runner-on-test-end!
